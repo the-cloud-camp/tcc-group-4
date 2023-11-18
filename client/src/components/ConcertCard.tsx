@@ -1,15 +1,29 @@
 import { MapPinIcon, CalendarDaysIcon } from "@heroicons/react/24/outline";
-
-interface ConcertDataType {
-  name: string;
-  place: string;
-  date: string;
-}
+import { store } from "../redux/store";
+import {
+  ConcertDataType,
+  concertActions,
+  selectConcertState,
+} from "../features/concert/concertSlice";
+import { useAppSelector } from "../redux/hooks";
 
 interface ConcertCardProps {
   data: ConcertDataType;
 }
 const ConcertCard = ({ data }: ConcertCardProps) => {
+  const concertState = useAppSelector(selectConcertState);
+  const { selectedConcert } = concertState;
+
+  const handleSelectConcert = (concert: ConcertDataType) => {
+    store.dispatch(
+      concertActions.setSelectedConcert({
+        ...selectedConcert,
+        item: concert,
+        hidden: false,
+      })
+    );
+  };
+
   return (
     <section className="p-4 bg-white rounded shadow flex flex-col gap-4">
       <div className="overflow-hidden rounded">
@@ -35,7 +49,10 @@ const ConcertCard = ({ data }: ConcertCardProps) => {
           </p>
         </div>
       </div>
-      <button className=" bg-violet-800 w-full text-white p-3 rounded">
+      <button
+        className=" bg-violet-800 w-full text-white p-3 rounded"
+        onClick={() => handleSelectConcert(data)}
+      >
         Buy Ticket
       </button>
     </section>

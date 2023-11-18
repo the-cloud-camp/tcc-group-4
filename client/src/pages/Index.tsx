@@ -1,12 +1,18 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import concertData from "../data/mock-concert-data.json";
 import ConcertCard from "../components/ConcertCard";
 import ReactLoading from "react-loading";
+import {
+  concertActions,
+  selectConcertState,
+} from "../features/concert/concertSlice";
+import { useAppSelector } from "../redux/hooks";
+import { store } from "../redux/store";
+import ConcertModal from "../components/ConcertModal";
 
 const Index = () => {
-  const [visibleItems, setVisibleItems] = useState(9);
-  const [totalItems, setTotalItems] = useState(concertData.length);
-  const [loading, setLoading] = useState(false);
+  const concertState = useAppSelector(selectConcertState);
+  const { visibleItems, totalItems, loading, selectedConcert } = concertState;
 
   const handleScroll = () => {
     if (
@@ -14,22 +20,32 @@ const Index = () => {
       document.documentElement.offsetHeight - 100
     ) {
       if (visibleItems < totalItems) {
-        setLoading(true);
+        store.dispatch(concertActions.setLoading(true));
         setTimeout(() => {
           const newVisibleItems = Math.min(visibleItems + 9, totalItems);
-          setVisibleItems(newVisibleItems);
-          setLoading(false);
+          store.dispatch(concertActions.setVisibleItems(newVisibleItems));
+          store.dispatch(concertActions.setLoading(false));
         }, 1000);
       }
     }
   };
 
+  const memorizedHandleScroll = useCallback(handleScroll, [
+    totalItems,
+    visibleItems,
+  ]);
+
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+    store.dispatch(concertActions.setTotalItems(concertData.length));
+    return () => {};
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("scroll", memorizedHandleScroll);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", memorizedHandleScroll);
     };
-  }, [visibleItems, totalItems]);
+  }, [visibleItems, totalItems, memorizedHandleScroll]);
 
   return (
     <>
@@ -42,6 +58,7 @@ const Index = () => {
       </nav>
 
       <main className="container">
+        {!selectedConcert.hidden && <ConcertModal />}
         <section className="grid grid-cols-3 gap-5 py-5">
           {concertData.slice(0, visibleItems).map((data, index) => (
             <ConcertCard data={data} key={index} />
