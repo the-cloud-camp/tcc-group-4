@@ -2,12 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../redux/store";
 
 export interface ConcertDataType {
+  productId: number;
   name: string;
   place: string;
   date: string;
+  price: number;
 }
 
 interface ConcertState {
+  concertLists: ConcertDataType[];
   selectedConcert: {
     item: ConcertDataType | undefined;
     amount: number;
@@ -21,6 +24,7 @@ interface ConcertState {
 }
 
 const initialState: ConcertState = {
+  concertLists: [],
   selectedConcert: {
     item: undefined,
     amount: 1,
@@ -64,6 +68,9 @@ export const concertSlice = createSlice({
           break;
       }
       state.selectedConcert.amount = amountTicket;
+    },
+    setConcertList: (state, action) => {
+      state.concertLists = action.payload;
     },
   },
 });

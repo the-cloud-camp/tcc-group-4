@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from "react";
-import concertData from "../data/mock-concert-data.json";
 import ConcertCard from "../components/ConcertCard";
 import ReactLoading from "react-loading";
 import {
@@ -12,7 +11,16 @@ import ConcertModal from "../components/ConcertModal";
 
 const Index = () => {
   const concertState = useAppSelector(selectConcertState);
-  const { visibleItems, totalItems, loading, selectedConcert } = concertState;
+  const { visibleItems, totalItems, loading, selectedConcert, concertLists } =
+    concertState;
+
+  const getConcertList = async () => {
+    const response = await fetch(import.meta.env.VITE_API_URL + "/product/all");
+    if (response.ok) {
+      const data = await response.json();
+      store.dispatch(concertActions.setConcertList(data));
+    }
+  };
 
   const handleScroll = () => {
     if (
@@ -36,9 +44,13 @@ const Index = () => {
   ]);
 
   useEffect(() => {
-    store.dispatch(concertActions.setTotalItems(concertData.length));
+    getConcertList();
     return () => {};
   }, []);
+  useEffect(() => {
+    store.dispatch(concertActions.setTotalItems(concertLists.length));
+    return () => {};
+  }, [concertLists]);
 
   useEffect(() => {
     window.addEventListener("scroll", memorizedHandleScroll);
@@ -60,7 +72,7 @@ const Index = () => {
       <main className="container">
         {!selectedConcert.hidden && <ConcertModal />}
         <section className="grid grid-cols-3 gap-5 py-5">
-          {concertData.slice(0, visibleItems).map((data, index) => (
+          {concertLists.slice(0, visibleItems).map((data, index) => (
             <ConcertCard data={data} key={index} />
           ))}
         </section>

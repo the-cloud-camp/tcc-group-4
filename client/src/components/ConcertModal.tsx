@@ -16,16 +16,41 @@ const ConcertModal = () => {
   const concertState = useAppSelector(selectConcertState);
   const { selectedConcert } = concertState;
 
-  const handleConfirm = () => {
-    alert(`Send Dato to Server
-    ${JSON.stringify(selectedConcert)}`);
-    store.dispatch(
-      concertActions.setSelectedConcert({
-        ...selectedConcert,
-        item: undefined,
-        hidden: true,
-      })
-    );
+  const handleConfirm = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (selectedConcert.item) {
+      const response = await fetch(
+        import.meta.env.VITE_API_URL + "/product/checkout",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            txn: {
+              email: selectedConcert.email,
+              item: selectedConcert.amount,
+              phoneNumber: "213456789",
+              txnAmount: Math.floor(
+                selectedConcert.amount * selectedConcert.item.price
+              ),
+              products: [
+                {
+                  id: selectedConcert.item.productId,
+                },
+              ],
+            },
+          }),
+        }
+      );
+      if (response.ok) {
+        store.dispatch(
+          concertActions.setSelectedConcert({
+            ...selectedConcert,
+            item: undefined,
+            hidden: true,
+            amount: 1,
+          })
+        );
+      }
+    }
   };
 
   useEffect(() => {
@@ -36,6 +61,7 @@ const ConcertModal = () => {
             ...selectedConcert,
             item: undefined,
             hidden: true,
+            amount: 1,
           })
         );
       }
@@ -68,6 +94,7 @@ const ConcertModal = () => {
                   ...selectedConcert,
                   item: undefined,
                   hidden: true,
+                  amount: 1,
                 })
               )
             }
@@ -85,12 +112,14 @@ const ConcertModal = () => {
               </h2>
               <div className="flex items-center gap-2">
                 <MapPinIcon className="w-5 h-5" />
-                <p className="text-sm truncate">{selectedConcert.item.place}</p>
+                <p className="text-sm truncate">
+                  {selectedConcert.item.place || "Unknow"}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <CalendarDaysIcon className="w-5 h-5" />
                 <p className="text-sm truncate">
-                  {new Date(selectedConcert.item.date).toLocaleString(
+                  {new Date(selectedConcert.item.date || 2023).toLocaleString(
                     "default",
                     {
                       day: "2-digit",
@@ -136,7 +165,10 @@ const ConcertModal = () => {
             </div>
             <div className="flex justify-end items-end ">
               <p className="bg-violet-800 py-1 px-4 rounded-full text-white font-medium select-none">
-                Total: {5 * selectedConcert.amount}
+                Total:
+                {Math.floor(
+                  selectedConcert.item.price * selectedConcert.amount
+                )}
               </p>
             </div>
           </div>
@@ -148,7 +180,7 @@ const ConcertModal = () => {
           <input
             type="email"
             className=" border-[1px] w-full rounded px-4 py-2 my-2"
-            required
+            // required
             onChange={(e) =>
               store.dispatch(
                 concertActions.setSelectedConcert({
@@ -158,7 +190,10 @@ const ConcertModal = () => {
               )
             }
           />
-          <button className=" bg-violet-800 w-full text-white p-3 rounded">
+          <button
+            className=" bg-violet-800 w-full text-white p-3 rounded"
+            type="submit"
+          >
             Confirm
           </button>
         </form>
