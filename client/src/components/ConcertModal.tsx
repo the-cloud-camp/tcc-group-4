@@ -11,6 +11,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/20/solid";
+import axios from "axios";
 
 const ConcertModal = () => {
   const concertState = useAppSelector(selectConcertState);
@@ -19,28 +20,43 @@ const ConcertModal = () => {
   const handleConfirm = async (event: React.FormEvent) => {
     event.preventDefault();
     if (selectedConcert.item) {
-      const response = await fetch(
-        import.meta.env.VITE_API_URL + "/product/checkout",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            txn: {
-              email: selectedConcert.email,
-              item: selectedConcert.amount,
-              phoneNumber: "213456789",
-              txnAmount: Math.floor(
-                selectedConcert.amount * selectedConcert.item.price
-              ),
-              products: [
-                {
-                  id: selectedConcert.item.productId,
-                },
-              ],
+      const response = await axios.post(import.meta.env.VITE_API_URL + "/product/checkout",{
+        txn: {
+          email: selectedConcert.email,
+          item: selectedConcert.amount,
+          phoneNumber: "213456789",
+          txnAmount: Math.floor(
+            selectedConcert.amount * selectedConcert.item.price
+          ),
+          products: [
+            {
+              id: selectedConcert.item.productId,
             },
-          }),
-        }
-      );
-      if (response.ok) {
+          ],
+        },
+      })
+      // const response = await fetch(
+      //   import.meta.env.VITE_API_URL + "/product/checkout",
+      //   {
+      //     method: "POST",
+      //     body: JSON.stringify({
+      //       txn: {
+      //         email: selectedConcert.email,
+      //         item: selectedConcert.amount,
+      //         phoneNumber: "213456789",
+      //         txnAmount: Math.floor(
+      //           selectedConcert.amount * selectedConcert.item.price
+      //         ),
+      //         products: [
+      //           {
+      //             id: selectedConcert.item.productId,
+      //           },
+      //         ],
+      //       },
+      //     }),
+      //   }
+      // );
+      if (response.status === 200) {
         store.dispatch(
           concertActions.setSelectedConcert({
             ...selectedConcert,
