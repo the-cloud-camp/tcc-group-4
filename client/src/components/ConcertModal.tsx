@@ -20,42 +20,25 @@ const ConcertModal = () => {
   const handleConfirm = async (event: React.FormEvent) => {
     event.preventDefault();
     if (selectedConcert.item) {
-      const response = await axios.post(import.meta.env.VITE_API_URL + "/product/checkout",{
-        txn: {
-          email: selectedConcert.email,
-          item: selectedConcert.amount,
-          phoneNumber: "213456789",
-          txnAmount: Math.floor(
-            selectedConcert.amount * selectedConcert.item.price
-          ),
-          products: [
-            {
-              id: selectedConcert.item.productId,
-            },
-          ],
-        },
-      })
-      // const response = await fetch(
-      //   import.meta.env.VITE_API_URL + "/product/checkout",
-      //   {
-      //     method: "POST",
-      //     body: JSON.stringify({
-      //       txn: {
-      //         email: selectedConcert.email,
-      //         item: selectedConcert.amount,
-      //         phoneNumber: "213456789",
-      //         txnAmount: Math.floor(
-      //           selectedConcert.amount * selectedConcert.item.price
-      //         ),
-      //         products: [
-      //           {
-      //             id: selectedConcert.item.productId,
-      //           },
-      //         ],
-      //       },
-      //     }),
-      //   }
-      // );
+      const response = await axios.post(
+        import.meta.env.VITE_API_URL + "/product/checkout",
+        {
+          txn: {
+            email: selectedConcert.email,
+            item: selectedConcert.amount,
+            phoneNumber: "213456789",
+            txnAmount: Math.floor(
+              selectedConcert.amount * selectedConcert.item.price
+            ),
+            products: [
+              {
+                id: selectedConcert.item.productId,
+              },
+            ],
+          },
+        }
+      );
+
       if (response.status === 200) {
         store.dispatch(
           concertActions.setSelectedConcert({
@@ -188,15 +171,15 @@ const ConcertModal = () => {
               </p>
             </div>
           </div>
-          <hr className="w-full my-4" />
-          <h1 className="text-center py-4">Payment</h1>
+          {/* <hr className="w-full my-4" />
+          <h1 className="text-center py-4">Payment</h1> */}
           <hr className="w-full my-4" />
           <h1>Email Address</h1>
 
           <input
             type="email"
             className=" border-[1px] w-full rounded px-4 py-2 my-2"
-            // required
+            required
             onChange={(e) =>
               store.dispatch(
                 concertActions.setSelectedConcert({
