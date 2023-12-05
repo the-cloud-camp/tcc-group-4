@@ -20,6 +20,16 @@ const ConcertModal = () => {
   const handleConfirm = async (event: React.FormEvent) => {
     event.preventDefault();
     if (selectedConcert.item) {
+      store.dispatch(concertActions.setLoading(true));
+
+      store.dispatch(
+        concertActions.setSelectedConcert({
+          ...selectedConcert,
+          item: undefined,
+          hidden: true,
+          amount: 1,
+        })
+      );
       const response = await axios.post(
         import.meta.env.VITE_API_URL + "/product/checkout",
         {
@@ -41,14 +51,21 @@ const ConcertModal = () => {
 
       if (response.status === 200) {
         store.dispatch(
-          concertActions.setSelectedConcert({
-            ...selectedConcert,
-            item: undefined,
-            hidden: true,
-            amount: 1,
+          concertActions.setAlertModal({
+            hidden: false,
+            text: `Congratulations 🎉 Please check your email`,
           })
         );
+      } else {
+        store.dispatch(
+          concertActions.setAlertModal({
+            hidden: false,
+            text: `Something wrong please try again`,
+          })
+        );
+        store.dispatch(concertActions.setLoading(false));
       }
+      store.dispatch(concertActions.setLoading(false));
     }
   };
 

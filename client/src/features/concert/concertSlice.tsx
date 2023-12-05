@@ -20,7 +20,12 @@ interface ConcertState {
   };
   visibleItems: number;
   totalItems: number;
-  loading: false;
+  loading: boolean;
+  loadmore: boolean;
+  alertModal: {
+    hidden: boolean;
+    text: string;
+  };
 }
 
 const initialState: ConcertState = {
@@ -35,6 +40,11 @@ const initialState: ConcertState = {
   visibleItems: 9,
   totalItems: 0,
   loading: false,
+  loadmore: false,
+  alertModal: {
+    hidden: true,
+    text: "",
+  },
 };
 
 export const concertSlice = createSlice({
@@ -46,6 +56,9 @@ export const concertSlice = createSlice({
     },
     setLoading: (state, action) => {
       state.loading = action.payload;
+    },
+    setLoadmore: (state, action) => {
+      state.loadmore = action.payload;
     },
     setVisibleItems: (state, action) => {
       state.visibleItems = action.payload;
@@ -71,6 +84,9 @@ export const concertSlice = createSlice({
     },
     setConcertList: (state, action) => {
       state.concertLists = action.payload;
+    },
+    setAlertModal: (state, action) => {
+      state.alertModal = action.payload;
     },
   },
 });
