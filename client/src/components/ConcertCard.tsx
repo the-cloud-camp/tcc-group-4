@@ -36,12 +36,12 @@ const ConcertCard = ({ data }: ConcertCardProps) => {
         <h2 className=" text-lg font-medium text-violet-800">{data.name}</h2>
         <div className="flex items-center gap-2">
           <MapPinIcon className="w-5 h-5" />
-          <p className="text-sm truncate">{data.place}</p>
+          <p className="text-sm truncate">{data.place || "Unknown"}</p>
         </div>
         <div className="flex items-center gap-2">
           <CalendarDaysIcon className="w-5 h-5" />
           <p className="text-sm truncate">
-            {new Date(data.date).toLocaleString("default", {
+            {new Date(data.date || "2023").toLocaleString("default", {
               day: "2-digit",
               month: "long",
               year: "numeric",

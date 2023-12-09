@@ -2,12 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../redux/store";
 
 export interface ConcertDataType {
+  productId: number;
   name: string;
   place: string;
   date: string;
+  price: number;
 }
 
 interface ConcertState {
+  concertLists: ConcertDataType[];
   selectedConcert: {
     item: ConcertDataType | undefined;
     amount: number;
@@ -17,10 +20,16 @@ interface ConcertState {
   };
   visibleItems: number;
   totalItems: number;
-  loading: false;
+  loading: boolean;
+  loadmore: boolean;
+  alertModal: {
+    hidden: boolean;
+    text: string;
+  };
 }
 
 const initialState: ConcertState = {
+  concertLists: [],
   selectedConcert: {
     item: undefined,
     amount: 1,
@@ -31,6 +40,11 @@ const initialState: ConcertState = {
   visibleItems: 9,
   totalItems: 0,
   loading: false,
+  loadmore: false,
+  alertModal: {
+    hidden: true,
+    text: "",
+  },
 };
 
 export const concertSlice = createSlice({
@@ -42,6 +56,9 @@ export const concertSlice = createSlice({
     },
     setLoading: (state, action) => {
       state.loading = action.payload;
+    },
+    setLoadmore: (state, action) => {
+      state.loadmore = action.payload;
     },
     setVisibleItems: (state, action) => {
       state.visibleItems = action.payload;
@@ -64,6 +81,12 @@ export const concertSlice = createSlice({
           break;
       }
       state.selectedConcert.amount = amountTicket;
+    },
+    setConcertList: (state, action) => {
+      state.concertLists = action.payload;
+    },
+    setAlertModal: (state, action) => {
+      state.alertModal = action.payload;
     },
   },
 });

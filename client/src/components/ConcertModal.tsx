@@ -11,21 +11,62 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/20/solid";
+import axios from "axios";
 
 const ConcertModal = () => {
   const concertState = useAppSelector(selectConcertState);
   const { selectedConcert } = concertState;
 
-  const handleConfirm = () => {
-    alert(`Send Dato to Server
-    ${JSON.stringify(selectedConcert)}`);
-    store.dispatch(
-      concertActions.setSelectedConcert({
-        ...selectedConcert,
-        item: undefined,
-        hidden: true,
-      })
-    );
+  const handleConfirm = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (selectedConcert.item) {
+      store.dispatch(concertActions.setLoading(true));
+
+      store.dispatch(
+        concertActions.setSelectedConcert({
+          ...selectedConcert,
+          item: undefined,
+          hidden: true,
+          amount: 1,
+        })
+      );
+      const response = await axios.post(
+        import.meta.env.VITE_API_URL + "/product/checkout",
+        {
+          txn: {
+            email: selectedConcert.email,
+            item: selectedConcert.amount,
+            phoneNumber: "213456789",
+            txnAmount: Math.floor(
+              selectedConcert.amount * selectedConcert.item.price
+            ),
+            products: [
+              {
+                id: selectedConcert.item.productId,
+              },
+            ],
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        store.dispatch(
+          concertActions.setAlertModal({
+            hidden: false,
+            text: `Congratulations 🎉 Please check your email`,
+          })
+        );
+      } else {
+        store.dispatch(
+          concertActions.setAlertModal({
+            hidden: false,
+            text: `Something wrong please try again`,
+          })
+        );
+        store.dispatch(concertActions.setLoading(false));
+      }
+      store.dispatch(concertActions.setLoading(false));
+    }
   };
 
   useEffect(() => {
@@ -36,6 +77,7 @@ const ConcertModal = () => {
             ...selectedConcert,
             item: undefined,
             hidden: true,
+            amount: 1,
           })
         );
       }
@@ -68,6 +110,7 @@ const ConcertModal = () => {
                   ...selectedConcert,
                   item: undefined,
                   hidden: true,
+                  amount: 1,
                 })
               )
             }
@@ -85,12 +128,14 @@ const ConcertModal = () => {
               </h2>
               <div className="flex items-center gap-2">
                 <MapPinIcon className="w-5 h-5" />
-                <p className="text-sm truncate">{selectedConcert.item.place}</p>
+                <p className="text-sm truncate">
+                  {selectedConcert.item.place || "Unknow"}
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <CalendarDaysIcon className="w-5 h-5" />
                 <p className="text-sm truncate">
-                  {new Date(selectedConcert.item.date).toLocaleString(
+                  {new Date(selectedConcert.item.date || 2023).toLocaleString(
                     "default",
                     {
                       day: "2-digit",
@@ -136,12 +181,15 @@ const ConcertModal = () => {
             </div>
             <div className="flex justify-end items-end ">
               <p className="bg-violet-800 py-1 px-4 rounded-full text-white font-medium select-none">
-                Total: {5 * selectedConcert.amount}
+                Total:
+                {Math.floor(
+                  selectedConcert.item.price * selectedConcert.amount
+                )}
               </p>
             </div>
           </div>
-          <hr className="w-full my-4" />
-          <h1 className="text-center py-4">Payment</h1>
+          {/* <hr className="w-full my-4" />
+          <h1 className="text-center py-4">Payment</h1> */}
           <hr className="w-full my-4" />
           <h1>Email Address</h1>
 
@@ -158,7 +206,10 @@ const ConcertModal = () => {
               )
             }
           />
-          <button className=" bg-violet-800 w-full text-white p-3 rounded">
+          <button
+            className=" bg-violet-800 w-full text-white p-3 rounded"
+            type="submit"
+          >
             Confirm
           </button>
         </form>
