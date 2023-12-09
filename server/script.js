@@ -59,16 +59,6 @@ async function createMockData() {
         item: product.length,
       },
     })
-    // Generate mock product transactions
-    // for (let j = 1; j <= 2; j++) {
-    //   await prisma.productTransaction.create({
-    //     data: {
-    //       transactionId: transaction.txnId,
-    //       productId: j,
-    //       quantity: Math.floor(Math.random() * 5),
-    //     },
-    //   })
-    // }
   }
 }
 
