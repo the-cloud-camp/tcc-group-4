@@ -1,8 +1,6 @@
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 name: Bump version
-on:
-  push:
-    branches:
-      - master
+on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
