@@ -1,11 +1,12 @@
-const processPayment = async () => {
-  return await new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(true)
-    }, 12000)
-  }).then((result) => {
-    return result
-  })
+const { sendQueuePayment } = require('../rabbitmq')
+
+const processPayment = async (message) => {
+  try {
+    const res = await sendQueuePayment(message)
+    return res
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 module.exports = {

@@ -15,5 +15,8 @@
   },
   "scripts": {
     "prepare": "husky install"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
   }
 }
