@@ -1,37 +1,16 @@
 version: '3'
 
-services:
-  backend:
-    build: .
-    ports:
-      - "8000:8000"
-    depends_on:
-      - mysql
-    environment:
-      - DB_HOST=mysql
-      - DB_USER=user
-      - DB_PASSWORD=user
-      - DB_NAME=stockdb
+networks:
+  grafanet:
 
-  mysql:
-    image: mysql:8.2.0
-    ports:
-      - "3306:3306"
-    environment:
-      - MYSQL_DATABASE=stockdb
-      - MYSQL_ROOT_PASSWORD=pass
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=user
-<<<<<<< HEAD
-  
-=======
+services:
   loki:
     image: grafana/loki:2.9.1
     container_name: loki
     networks:
       - grafanet
     volumes:
-      - ./log/loki-config.yaml:/mnt/config/loki-config.yaml
+      - ./loki-config.yaml:/mnt/config/loki-config.yaml
     ports:
       - "3100:3100"
     command: -config.file=/mnt/config/loki-config.yaml
@@ -42,8 +21,8 @@ services:
     networks:
       - grafanet
     volumes:
-      - ./log/agent.yaml:/etc/agent/agent.yaml
-      - ./log/agent-data:/etc/agent/data
+      - ./agent.yaml:/etc/agent/agent.yaml
+      - ./agent-data:/etc/agent/data
 
   grafana:
     environment:
@@ -74,7 +53,3 @@ services:
       - "3000:3000"
     networks:
       - grafanet
-
-networks:
-  grafanet:
->>>>>>> d46a68bf (feat: update config logger)
