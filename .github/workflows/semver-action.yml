@@ -3,7 +3,7 @@ name: Bump version
 on:
   push:
     branches:
-      - feat/add-semver
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
