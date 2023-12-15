@@ -1,6 +1,9 @@
 run-name: Bumping version
 name: Bump version
-on: [push]
+on:
+  push:
+    branches:
+      - feat/add-semver
 jobs:
   build:
     runs-on: ubuntu-latest
