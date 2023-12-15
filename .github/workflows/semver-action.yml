@@ -16,3 +16,4 @@ jobs:
           github_token: ${{ secrets.TOD_TOKEN }}
           dry_run: true
           default_bump: true
+# test semver
