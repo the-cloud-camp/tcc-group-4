@@ -15,16 +15,20 @@ jobs:
       #   with:
       #     username: ${{ secrets.TOD_DOCKER_USERNAME }}
       #     password: ${{ secrets.TOD_DOCKERHUB_TOKEN }}
-      - name: get tag name
-        uses: little-core-labs/get-git-tag@v3.0.1
-        id: tagName
+      # - name: get tag name
+      #   uses: little-core-labs/get-git-tag@v3.0.1
+      #   id: tagName
+      #   with:
+      #     tagRegex: "v"
+      - name: 'Get Previous tag'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
         with:
-          tagRegex: "v"
+          fallback: 1.0.0
       - name: Test get tag
         run: |
             echo "1 - ${{ GITHUB.REF }}"
-            echo "2 - ${{ steps.tagName.outputs.tag }}"
-            echo "3 - $GIT_TAG_NAME"
+            echo "2 - ${{ steps.previoustag.outputs.tag }}"
       # - name: Build and push
       #   uses: docker/build-push-action@v5
       #   with:
