@@ -1,6 +1,9 @@
 run-name: Bump Version, Build Docker image then Push to registry
 name: Build Docker image the Push to registry
-on: [push]
+on:
+  push:
+    branches:
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
