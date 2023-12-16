@@ -2,6 +2,7 @@ const LokiTransport = require("winston-loki");
 const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, label, printf, json } = format;
 const { NodeSDK } = require("@opentelemetry/sdk-node");
+const opentelemetry = require("@opentelemetry/api");
 
 const { Resource } = require("@opentelemetry/resources");
 const {
@@ -17,10 +18,11 @@ const {
 const {
   PeriodicExportingMetricReader,
   ConsoleMetricExporter,
+  MeterProvider,
 } = require("@opentelemetry/sdk-metrics");
 
-function configureLogger(name, version) {
-  const logFormat = combine(format.simple(), timestamp());
+function configureLogger(name) {
+  const logFormat = combine(format.json(), timestamp());
 
   const logLevels = {
     fatal: 0,
@@ -63,7 +65,27 @@ function configureTracer(name) {
   return trace;
 }
 
+function configureMeter(name) {
+  const resource = new Resource({
+    [SemanticResourceAttributes.SERVICE_NAME]: name,
+  });
+
+  const metricReader = new PeriodicExportingMetricReader({
+    exporter: new OTLPMetricExporter(),
+
+    exportIntervalMillis: 3000,
+  });
+
+  const myServiceMeterProvider = new MeterProvider({
+    resource: resource,
+  });
+
+  myServiceMeterProvider.addMetricReader(metricReader);
+
+  return opentelemetry.metrics.setGlobalMeterProvider(myServiceMeterProvider);
+}
 module.exports = {
   configureLogger,
   configureTracer,
+  configureMeter,
 };
