@@ -1,5 +1,5 @@
-run-name: Bump Version, Build Docker image then Push to registry
-name: Build Docker image the Push to registry
+run-name: Build
+name: Bump Version, Build Docker image then Push to registry
 on:
   push:
     branches:
@@ -19,20 +19,15 @@ jobs:
         with:
           username: ${{ secrets.TOD_DOCKER_USERNAME }}
           password: ${{ secrets.TOD_DOCKERHUB_TOKEN }}
-      - name: Test get tag
-        run: |
-            echo "1 - ${{ GITHUB.REF }}"
-            echo "2 - ${{ steps.tag_version.outputs.new_tag }}"
-      - name: Build and push
+      - name: Build and push - client
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: justtod/shobteeprajump:${{ steps.tag_version.outputs.new_tag }}
-      # - name: Build and push Docker image
-      #   id: build-and-push
-      #   uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
+          context: ./client
+          tags: justtod/shobteeprajump-client:${{ steps.tag_version.outputs.new_tag }}
+      # - name: Build and push - server
+      #   uses: docker/build-push-action@v5
       #   with:
-      #     context: .
       #     push: true
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     labels: ${{ steps.meta.outputs.labels }}
+      #     context: ./server
+      #     tags: justtod/shobteeprajump-server:${{ steps.tag_version.outputs.new_tag }}
