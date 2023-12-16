@@ -22,9 +22,9 @@ jobs:
           tagRegex: "v"
       - name: Test get tag
         run: |
-            echo "tag=${GITHUB_REF#refs/*/}"
-            echo "${{ GITHUB.REF }}"
-            echo " ${{ steps.tagName.outputs.tag }}"
+            echo "1 - ${{ GITHUB.REF }}"
+            echo "2 - ${{ steps.tagName.outputs.tag }}"
+            echo "3 - $GIT_TAG_NAME"
       # - name: Build and push
       #   uses: docker/build-push-action@v5
       #   with:
