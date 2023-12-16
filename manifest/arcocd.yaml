@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
- name: nong-kai
- namespace: argocd
+ name: group-4-app-dev
+ namespace: group-4-dev
 spec:
  project: default
  source:
    repoURL: git@github.com:the-cloud-camp/tcc-group-4.git
    targetRevision: main
-   path: prod/deployment
+   path: manifest
  destination:
    server: https://kubernetes.default.svc
-   namespace: group-4
+   namespace: group-4-dev
