@@ -10,15 +10,19 @@ jobs:
     #   image_tag: ${{ steps.meta.outputs.tags }}
     # environment: dev
     steps:
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.TOD_DOCKER_USERNAME }}
-          password: ${{ secrets.TOD_DOCKERHUB_TOKEN }}
+      # - name: Login to Docker Hub
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{ secrets.TOD_DOCKER_USERNAME }}
+      #     password: ${{ secrets.TOD_DOCKERHUB_TOKEN }}
+      - name: get tag name
+        uses: little-core-labs/get-git-tag@v3.0.1
+        id: tagName
       - name: Test get tag
         run: |
             echo "tag=${GITHUB_REF#refs/*/}"
             echo "${{ GITHUB.REF }}"
+            echo " ${{ steps.tagName.outputs.tag }}"
       # - name: Build and push
       #   uses: docker/build-push-action@v5
       #   with:
