@@ -12,8 +12,11 @@
   "license": "ISC",
   "dependencies": {
     "@opentelemetry/exporter-logs-otlp-http": "^0.46.0",
+    "@opentelemetry/exporter-metrics-otlp-proto": "^0.46.0",
+    "@opentelemetry/exporter-trace-otlp-proto": "^0.46.0",
     "@opentelemetry/resources": "^1.19.0",
     "@opentelemetry/sdk-logs": "^0.46.0",
+    "@opentelemetry/sdk-metrics": "^1.19.0",
     "@opentelemetry/semantic-conventions": "^1.19.0",
     "@prisma/client": "^5.6.0",
     "amqplib": "^0.10.3",

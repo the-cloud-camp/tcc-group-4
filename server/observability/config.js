@@ -1,6 +1,23 @@
 const LokiTransport = require("winston-loki");
 const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, label, printf, json } = format;
+const { NodeSDK } = require("@opentelemetry/sdk-node");
+
+const { Resource } = require("@opentelemetry/resources");
+const {
+  SemanticResourceAttributes,
+} = require("@opentelemetry/semantic-conventions");
+
+const {
+  OTLPTraceExporter,
+} = require("@opentelemetry/exporter-trace-otlp-proto");
+const {
+  OTLPMetricExporter,
+} = require("@opentelemetry/exporter-metrics-otlp-proto");
+const {
+  PeriodicExportingMetricReader,
+  ConsoleMetricExporter,
+} = require("@opentelemetry/sdk-metrics");
 
 function configureLogger(name, version) {
   const logFormat = combine(format.simple(), timestamp());
@@ -36,6 +53,17 @@ function configureLogger(name, version) {
   return logger;
 }
 
+function configureTracer(name) {
+  const trace = new NodeSDK({
+    resource: new Resource({
+      [SemanticResourceAttributes.SERVICE_NAME]: name,
+    }),
+    traceExporter: new OTLPTraceExporter(),
+  });
+  return trace;
+}
+
 module.exports = {
   configureLogger,
+  configureTracer,
 };
