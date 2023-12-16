@@ -30,7 +30,7 @@ jobs:
       - name: Test get tag
         run: |
             echo "1 - ${{ GITHUB.REF }}"
-            echo "2 - ${{ steps.tag_version.outputs.tag }}"
+            echo "2 - ${{ steps.tag_version.outputs.new_tag }}"
       # - name: Build and push
       #   uses: docker/build-push-action@v5
       #   with:
