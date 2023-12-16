@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: group-4-deployment
-  namespace: dev
+  namespace: group-4-dev
 spec:
   revisionHistoryLimit: 2
   selector:
