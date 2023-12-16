@@ -1,5 +1,5 @@
-const LokiTransport = require("winston-loki")
-const { createLogger, format, transports } = require("winston")
+const LokiTransport = require("winston-loki");
+const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, label, printf, json } = format;
 
 let logger;
@@ -18,7 +18,7 @@ const initializeLogger = () => {
     return;
   }
 
-  const logFormat = combine(format.simple(), timestamp())
+  const logFormat = combine(format.simple(), timestamp());
 
   logger = createLogger({
     levels: logLevels,
@@ -45,4 +45,4 @@ const getLogger = () => {
   return logger;
 };
 
-module.exports = {getLogger}
+module.exports = { getLogger };
