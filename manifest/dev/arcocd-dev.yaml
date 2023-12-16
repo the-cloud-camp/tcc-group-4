@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+ name: group-4-app-dev
+ namespace: group-4-dev
+spec:
+ project: default
+ source:
+   repoURL: git@github.com:the-cloud-camp/tcc-group-4.git
+   targetRevision: group-4
+   path: manifest
+ destination:
+   server: in-cluster
+   namespace: group-4-dev
+ syncPolicy:
+  automated:
+    prune: true
