@@ -1,9 +1,9 @@
-FROM node:18-alpine
+FROM node:18-alpine3.18
+RUN mkdir /app
+COPY package*.json /app
 WORKDIR /app
-COPY . .
-RUN rm -rf node_modules
-RUN rm -rf package-lock.json
 RUN npm install
+COPY . .
 RUN npx prisma generate
 EXPOSE 3000 
 CMD ["npm", "start"]
