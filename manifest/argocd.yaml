@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-group-4-prod
+  namespace: group-4-prod
+spec:
+  project: default
+  source: 
+    repoURL: git@github.com:the-cloud-camp/tcc-group-4.git
+    targetRevision: main
+    path: manifest
+    directory:
+      recurse: true
+  destination:
+    name: in-cluster
+    namespace: group-4-prod
+  syncPolicy:
+    automated:
+      prune: true

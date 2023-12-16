@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: group-4-service-prod
+  namespace: group-4-prod
+spec:
+  selector:
+    app: group-4-prod
+  ports:
+  - port: 3000
+    targetPort: 3000
