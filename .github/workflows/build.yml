@@ -1,9 +1,6 @@
-run-name: Build Docker image the Push to registry
+run-name: Bump Version, Build Docker image then Push to registry
 name: Build Docker image the Push to registry
-on: 
-  push:
-    branches:
-      - main
+on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,6 +8,13 @@ jobs:
     #   image_tag: ${{ steps.meta.outputs.tags }}
     # environment: dev
     steps:
+      - uses: actions/checkout@v2
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.TOD_TOKEN }}
+          dry_run: true
       # - name: Login to Docker Hub
       #   uses: docker/login-action@v3
       #   with:
@@ -21,15 +25,10 @@ jobs:
       #   id: tagName
       #   with:
       #     tagRegex: "v"
-      - name: 'Get Previous tag'
-        id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        with:
-          fallback: 1.0.0
       - name: Test get tag
         run: |
             echo "1 - ${{ GITHUB.REF }}"
-            echo "2 - ${{ steps.previoustag.outputs.tag }}"
+            echo "2 - ${{ steps.tag_version.outputs.tag }}"
       # - name: Build and push
       #   uses: docker/build-push-action@v5
       #   with:
