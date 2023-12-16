@@ -94,14 +94,14 @@ otelcol.exporter.otlp  "default" {
         endpoint = "https://tempo-prod-14-prod-ap-southeast-1.grafana.net:443"
         auth     = otelcol.auth.basic.tempo.handler
         tls {
-            insecure             = true
             insecure_skip_verify = true
         }
-    }
-}
 
 otelcol.auth.basic "tempo" {
   username = "765829"
   password = "glc_eyJvIjoiMTAxMjYzNCIsIm4iOiJ0ZXN0LXRlc3QiLCJrIjoiazRkSTZsZjk1YXZIMDBXalhjOUk1NTRYIiwibSI6eyJyIjoidXMifX0="
 }
 
+=======
+}
+>>>>>>> 86d5dd5e (feat: update logger config in observability)
