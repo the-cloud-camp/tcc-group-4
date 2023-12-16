@@ -1,10 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: group-4-ingress
-  namespace: dev
+  name: groip-4-ingress-prod
+  namespace: group-4-prod
   labels:
-    name: group-4-app
+    name: group-4-prod
 spec:
   ingressClassName: nginx
   rules:
@@ -12,9 +12,9 @@ spec:
     http:
       paths:
       - pathType: Prefix
-        path: "/manifest"
+        path: "/group-4-prod"
         backend:
           service:
-            name: group-4-service
+            name: group-4-service-prod
             port: 
               number: 3000

@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: group-4-deployment-prod
+  namespace: group-4-prod
+spec:
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: group-4-prod
+  template:
+    metadata:
+      labels:
+        app: group-4-prod
+    spec:
+      containers:
+      - name: group-4
+        image: ghcr.io/the-cloud-camp/project-demo:dev-7e3d013
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3000
