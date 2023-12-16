@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: group-4-service
-  namespace: group-4-dev
+  namespace: dev
 spec:
   selector:
     app: group-4-app
