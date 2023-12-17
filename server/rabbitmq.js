@@ -3,9 +3,10 @@ var updateChannel, paymentChannel, emailChannel
 const paymentQueue = 'tcc-group-4-payment1'
 const emailQueue = 'tcc-group-4-email1'
 const updateQueue = 'tcc-group-4-update-transaction1'
-
+var connectionSvc = process.env.RABBITMQ_SVC || 'localhost:5672'
 const createChannel = async () => {
-  const connection = await amqp.connect('amqp://localhost:5672')
+  console.log({ connectionSvc })
+  const connection = await amqp.connect(`amqp://${connectionSvc}`)
   paymentChannel = await connection.createChannel()
   emailChannel = await connection.createChannel()
   updateChannel = await connection.createChannel()

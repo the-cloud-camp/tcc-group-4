@@ -11,6 +11,7 @@ const { updateTxnController } = require('./controller/txn.controller')
 var paymentChannel, emailChannel, updateChannel
 const updateQueue = 'tcc-group-4-update-transaction1'
 
+connectQueue()
 async function connectQueue() {
   try {
     const channel = await createChannel()
@@ -40,5 +41,4 @@ app.use('/txn', txnRoute)
 
 app.listen(port, () => {
   console.log(`Server is start at http://localhost:${port}`)
-  connectQueue()
 })

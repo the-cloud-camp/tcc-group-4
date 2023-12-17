@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shobteeprajump-email-deployment
+  creationTimestamp: null
+  labels:
+    app: shobteeprajump-email-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shobteeprajump-email-app
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: shobteeprajump-email-app
+    spec:
+      containers:
+      - name: shobteeprajump-email-app
+        image: diskette42/shobteeprajump-email-app:2.0.0
+        env:
+          - name: RABBITMQ_SVC
+            value: group4-rabbitmq.group-4-dev:5672
+          - name: PORT
+            value: "8002"
+        ports:
+          - containerPort: 8002
+        resources: {}
+status: {}

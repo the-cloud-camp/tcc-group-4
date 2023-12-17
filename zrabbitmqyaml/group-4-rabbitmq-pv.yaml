@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: shobteeprajump-rabbitmq-pv
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /opt/app/group-4-shobteeprajump/rabbitmq
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: shobteeprajump-storage-b

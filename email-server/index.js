@@ -7,10 +7,13 @@ require('dotenv').config()
 const amqp = require('amqplib')
 const receiveQueue = 'tcc-group-4-email1'
 var receiveChannel, connection
+const connectionSvc = process.env.RABBITMQ_SVC || 'localhost:5672'
+
+connectQueue()
 
 async function connectQueue() {
   try {
-    connection = await amqp.connect('amqp://localhost:5672')
+    connection = await amqp.connect(`amqp://${connectionSvc}`)
     receiveChannel = await connection.createChannel()
 
     receiveChannel.assertQueue(receiveQueue, {
@@ -97,12 +100,11 @@ const sendingEmail = async (emailContext) => {
   }
 }
 
-const port = process.env.PORT || 8003
+const port = process.env.PORT || 8002
 
 app.use(cors())
 app.use(express.json())
 
 app.listen(port, () => {
   console.log(`Server is start at http://localhost:${port}`)
-  connectQueue()
 })
