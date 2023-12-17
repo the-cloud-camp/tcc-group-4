@@ -13,6 +13,9 @@ const getAllTxnsService = async () => {
       createdAt: true,
       txnStatus: true,
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
   })
   return data
 }
