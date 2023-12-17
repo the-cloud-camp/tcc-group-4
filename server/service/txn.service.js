@@ -126,6 +126,8 @@ const getTxnByTxnIdService = async (txnId) => {
               productDescription: true,
               productImage: true,
               price: true,
+              place: true,
+              eventDate: true,
             },
           },
         },
@@ -212,6 +214,8 @@ const manipulateData = (data) => {
       productDescription: p.product.productDescription,
       productImage: p.product.productImage,
       price: p.product.price,
+      place: p.product.place,
+      eventDate: p.product.eventDate,
     })),
   }
 }
