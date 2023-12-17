@@ -6,7 +6,7 @@ metadata:
   labels:
     app: shobteeprajump-app
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: shobteeprajump-app
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: shobteeprajump-app
-        image: diskette42/shobteeprajump-app:1.0.0
+        image: diskette42/shobteeprajump-app:3.1.0
         env:
           - name: DATABASE_URL
             value: mysql://user:user@group4-mysql.group-4-dev:3306/stockdb

@@ -6,7 +6,7 @@ metadata:
   labels:
     app: shobteeprajump-payment-app
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: shobteeprajump-payment-app
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: shobteeprajump-payment-app
-        image: diskette42/shobteeprajump-payment-app:2.0.0
+        image: diskette42/shobteeprajump-payment-app:3.0.0
         env:
           - name: RABBITMQ_SVC
             value: group4-rabbitmq.group-4-dev:5672
