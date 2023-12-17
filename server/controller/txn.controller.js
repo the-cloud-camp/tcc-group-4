@@ -1,3 +1,4 @@
+const { isRabbitMQConnectedFunc } = require('../rabbitmq')
 const { sendingEmail, sendEmail } = require('../service/email.service')
 const { processPayment } = require('../service/payment.service')
 const {
@@ -19,6 +20,8 @@ const getAllTxnsController = async (req, res) => {
 
 const createTxnController = async (req, res) => {
   try {
+    if (!isRabbitMQConnectedFunc())
+      return res.status(500).json({ error: 'Queue is not ready' })
     const data = await createTxnService(req.body.txn)
 
     if (!data.isReserve)

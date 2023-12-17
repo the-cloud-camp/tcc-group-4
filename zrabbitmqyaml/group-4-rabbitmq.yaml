@@ -4,7 +4,7 @@ metadata:
   name: group4-rabbitmq
 spec:
   serviceName: "group4-rabbitmq"
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: rabbitmq

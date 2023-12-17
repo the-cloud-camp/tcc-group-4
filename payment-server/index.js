@@ -1,19 +1,36 @@
 const express = require('express')
-const app = express()
+const amqp = require('amqplib')
 const cors = require('cors')
 require('dotenv').config()
-const amqp = require('amqplib')
+const app = express()
+
 const sendQueue = 'tcc-group-4-update-transaction1'
 const receiveQueue = 'tcc-group-4-payment1'
 const connectionSvc = process.env.RABBITMQ_SVC || 'localhost:5672'
-var receiveChannel, sendChannel, connection
+let receiveChannel, sendChannel, connection
+let isConnected = false
 
 connectQueue()
 async function connectQueue() {
   try {
     connection = await amqp.connect(`amqp://${connectionSvc}`)
+    isConnected = true
+    connection.on('close', () => {
+      console.log('connection closed')
+      isConnected = false
+      startInterval()
+    })
+
+    connection.on('error', () => {
+      console.log('connection error')
+      isConnected = false
+      startInterval()
+    })
+
     sendChannel = await connection.createChannel()
     receiveChannel = await connection.createChannel()
+    console.log('connected to rabbitmq')
+
     sendChannel.assertQueue(sendQueue, {
       durable: true,
     })
@@ -61,3 +78,17 @@ app.use(express.json())
 app.listen(port, () => {
   console.log(`Server is start at http://localhost:${port}`)
 })
+
+const startInterval = () => {
+  const intervalId = setInterval(() => {
+    if (isConnected) {
+      console.log('RabbitMQ is connected. Stop checking.')
+      clearInterval(intervalId)
+    } else {
+      console.log('RabbitMQ is not connected. Attempting to reconnect...')
+      connectQueue()
+    }
+  }, 1000)
+}
+
+startInterval()

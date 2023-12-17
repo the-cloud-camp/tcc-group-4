@@ -1,12 +1,12 @@
-const amqp = require('amqplib')
 var updateChannel, paymentChannel, emailChannel
 const paymentQueue = 'tcc-group-4-payment1'
 const emailQueue = 'tcc-group-4-email1'
 const updateQueue = 'tcc-group-4-update-transaction1'
-var connectionSvc = process.env.RABBITMQ_SVC || 'localhost:5672'
-const createChannel = async () => {
-  console.log({ connectionSvc })
-  const connection = await amqp.connect(`amqp://${connectionSvc}`)
+let RabbitMQConnection, isRabbitMQConnected
+
+const createChannel = async (connection, isConnected) => {
+  RabbitMQConnection = connection
+  isRabbitMQConnected = isConnected
   paymentChannel = await connection.createChannel()
   emailChannel = await connection.createChannel()
   updateChannel = await connection.createChannel()
@@ -58,9 +58,19 @@ const sendQueueEmail = async (message) => {
     return false
   }
 }
+function isRabbitMQConnectedFunc() {
+  return RabbitMQConnection && isRabbitMQConnected
+}
+
+function updateRabbitMQConnection(connection, isConnected) {
+  RabbitMQConnection = connection
+  isRabbitMQConnected = isConnected
+}
 
 module.exports = {
   createChannel,
   sendQueuePayment,
   sendQueueEmail,
+  isRabbitMQConnectedFunc,
+  updateRabbitMQConnection,
 }
