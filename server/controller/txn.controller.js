@@ -32,7 +32,11 @@ const createTxnController = async (req, res) => {
       txnAmount: data.txnAmount,
     })
 
-    await sendEmail(req.body)
+    const emailContext = {
+      ...req.body,
+      txnId: data.txnId,
+    }
+    await sendEmail(emailContext)
 
     res.json(data)
   } catch (err) {

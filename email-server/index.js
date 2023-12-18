@@ -10,6 +10,7 @@ const receiveQueue = 'tcc-group-4-email1'
 let receiveChannel, connection
 const connectionSvc = process.env.RABBITMQ_SVC || 'localhost:5672'
 let isConnected = false
+const appUrl = process.env.APP_URL || 'http://127.0.0.1:5173'
 
 connectQueue()
 
@@ -47,7 +48,7 @@ async function connectQueue() {
           )}`,
         )
         console.log(messageBody)
-
+        const txnDetailUrl = `${appUrl}/${messageBody.txnId}`
         await sendingEmail({
           email: messageBody.txn.email,
           subject: `Payment ${messageBody.txn.email}`,
@@ -71,10 +72,7 @@ async function connectQueue() {
                   )}</p>
 
                   <!-- Payment Button -->
-                  <form action="YOUR_PAYMENT_ENDPOINT" method="post">
-                      <!-- Add any necessary payment form fields here -->
-                      <button type="submit">Detail</button>
-                  </form>
+                  <a href="${txnDetailUrl}" class="button-link">Detail</a>
               </body>
               </html>
           `,
