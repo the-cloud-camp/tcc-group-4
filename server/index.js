@@ -97,21 +97,17 @@ const init = () => {
   app.use(responseTime(logResponseTime));
   app.use("/product", productRoute);
   app.use("/txn", txnRoute);
+  app.use("/ticket", ticketRoute);
 
   app.get("/health", (req, res) => {
     return res.send("OK");
   });
 
   app.use(logError);
-
-  const server = app.listen(port, () => {
+  app.listen(port, () => {
     console.log(`Server is start at http://localhost:${port}`);
   });
-
-  return server;
 };
-
-init();
 
 const startInterval = () => {
   const intervalId = setInterval(() => {
@@ -126,3 +122,4 @@ const startInterval = () => {
 };
 
 startInterval();
+init();

@@ -1,57 +1,57 @@
-const express = require('express')
-const amqp = require('amqplib')
-const cors = require('cors')
-require('dotenv').config()
+const express = require("express");
+const amqp = require("amqplib");
+const cors = require("cors");
+require("dotenv").config();
 
-const nodemailer = require('nodemailer')
-const app = express()
+const nodemailer = require("nodemailer");
+const app = express();
 
-const receiveQueue = 'tcc-group-4-email1'
-let receiveChannel, connection
-const connectionSvc = process.env.RABBITMQ_SVC || 'localhost:5672'
-let isConnected = false
-const appUrl = process.env.APP_URL || 'http://127.0.0.1:5173'
+const receiveQueue = "tcc-group-4-email1";
+let receiveChannel, connection;
+const connectionSvc = process.env.RABBITMQ_SVC || "localhost:5672";
+let isConnected = false;
+const appUrl = process.env.APP_URL || "http://127.0.0.1:5173";
 
-connectQueue()
+connectQueue();
 
 async function connectQueue() {
   try {
-    connection = await amqp.connect(`amqp://${connectionSvc}`)
-    isConnected = true
-    connection.on('close', () => {
-      console.log('connection closed')
-      isConnected = false
-      startInterval()
-    })
+    connection = await amqp.connect(`amqp://${connectionSvc}`);
+    isConnected = true;
+    connection.on("close", () => {
+      console.log("connection closed");
+      isConnected = false;
+      startInterval();
+    });
 
-    connection.on('error', () => {
-      console.log('connection error')
-      isConnected = false
-      startInterval()
-    })
+    connection.on("error", () => {
+      console.log("connection error");
+      isConnected = false;
+      startInterval();
+    });
 
-    receiveChannel = await connection.createChannel()
-    console.log('connected to rabbitmq')
+    receiveChannel = await connection.createChannel();
+    console.log("connected to rabbitmq");
 
     receiveChannel.assertQueue(receiveQueue, {
       durable: true,
-    })
-    receiveChannel.prefetch(1)
+    });
+    receiveChannel.prefetch(1);
 
     receiveChannel.consume(
       receiveQueue,
       async (message) => {
         try {
           if (message && receiveChannel) {
-            console.log(` ${message.content.toString()}`)
-            const messageBody = JSON.parse(message.content.toString())
+            console.log(` ${message.content.toString()}`);
+            const messageBody = JSON.parse(message.content.toString());
             console.log(
               `Message received from RabbitMQ: ${JSON.stringify(
-                message.content.toString(),
-              )}`,
-            )
-            console.log(messageBody)
-            const txnDetailUrl = `${appUrl}/${messageBody.txnId}`
+                message.content.toString()
+              )}`
+            );
+            console.log(messageBody);
+            const txnDetailUrl = `${appUrl}/${messageBody.txnId}`;
             await sendingEmail({
               email: messageBody.txn.email,
               subject: `Payment ${messageBody.txn.email}`,
@@ -71,7 +71,7 @@ async function connectQueue() {
                     messageBody.txn.phoneNumber
                   }</p>
                   <p><strong>Transaction Amount:</strong> $${messageBody.txn.txnAmount.toFixed(
-                    2,
+                    2
                   )}</p>
 
                   <!-- Payment Button -->
@@ -79,71 +79,71 @@ async function connectQueue() {
               </body>
               </html>
           `,
-            })
-            console.log('Email sent')
-            receiveChannel.ack(message)
+            });
+            console.log("Email sent");
+            receiveChannel.ack(message);
           }
         } catch (err) {
-          console.log(err)
+          console.log(err);
         }
       },
       {
         noAck: false,
-      },
-    )
+      }
+    );
   } catch (err) {
-    console.log(err)
-    startInterval()
+    console.log(err);
+    startInterval();
   }
 }
 
 const sendingEmail = async (emailContext) => {
   const transporter = nodemailer.createTransport({
-    service: 'Gmail',
+    service: "Gmail",
     port: 465,
     secure: true,
-    host: 'smtp.gmail.com',
+    host: "smtp.gmail.com",
     auth: {
-      user: 'jettapat.th@gmail.com',
-      pass: 'wxnu ayvn zkxq pkvq',
+      user: "jettapat.th@gmail.com",
+      pass: "wxnu ayvn zkxq pkvq",
     },
-  })
+  });
 
-  const { email, subject, text, html } = emailContext
+  const { email, subject, text, html } = emailContext;
   const mailData = {
-    from: 'jettapat.th@gmail.com',
+    from: "jettapat.th@gmail.com",
     to: email,
     subject,
     text,
     html,
-  }
+  };
 
   try {
-    return await transporter.sendMail(mailData)
+    return await transporter.sendMail(mailData);
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 
-const port = process.env.PORT || 8002
+const port = process.env.PORT || 8002;
 
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
 app.listen(port, () => {
-  console.log(`Server is start at http://localhost:${port}`)
-})
+  console.log(`Server is start at http://localhost:${port}`);
+});
 
 const startInterval = () => {
   const intervalId = setInterval(() => {
     if (isConnected) {
-      console.log('RabbitMQ is connected. Stop checking.')
-      clearInterval(intervalId)
+      console.log("RabbitMQ is connected. Stop checking.");
+      clearInterval(intervalId);
     } else {
-      console.log('RabbitMQ is not connected. Attempting to reconnect...')
-      connectQueue()
+      console.log("RabbitMQ is not connected. Attempting to reconnect...");
+      connectQueue();
     }
-  }, 1000)
-}
+  }, 1000);
+};
 
-startInterval()
+startInterval();
