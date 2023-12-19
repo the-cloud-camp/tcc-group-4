@@ -17,7 +17,7 @@ const init = () => {
   app.use("/txn", txnRoute);
 
   app.get("/health", (req, res) => {
-    return res.json({ status: 200 });
+    return res.send("OK");
   });
 
   app.use(logError);
