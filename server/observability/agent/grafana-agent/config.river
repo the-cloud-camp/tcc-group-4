@@ -96,12 +96,11 @@ otelcol.exporter.otlp  "default" {
         tls {
             insecure_skip_verify = true
         }
+    }
+}
 
 otelcol.auth.basic "tempo" {
   username = "765829"
   password = "glc_eyJvIjoiMTAxMjYzNCIsIm4iOiJ0ZXN0LXRlc3QiLCJrIjoiazRkSTZsZjk1YXZIMDBXalhjOUk1NTRYIiwibSI6eyJyIjoidXMifX0="
 }
 
-=======
-}
->>>>>>> 86d5dd5e (feat: update logger config in observability)
