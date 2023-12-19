@@ -1,8 +1,9 @@
 const LokiTransport = require("winston-loki");
-const { createLogger, format, transports } = require("winston");
+const { createLogger, format, transports, log } = require("winston");
 const { combine, timestamp, label, printf, json } = format;
 const { NodeSDK } = require("@opentelemetry/sdk-node");
 const opentelemetry = require("@opentelemetry/api");
+const axios = require("axios");
 
 const { Resource } = require("@opentelemetry/resources");
 const {
@@ -21,38 +22,48 @@ const {
   MeterProvider,
 } = require("@opentelemetry/sdk-metrics");
 
-function configureLogger(name) {
-  const logFormat = combine(format.json(), timestamp());
+class LokiHandler {
+  constructor(name) {
+    this.name = name;
+  }
 
-  const logLevels = {
-    fatal: 0,
-    error: 1,
-    warn: 2,
-    info: 3,
-    debug: 4,
-    trace: 5,
-  };
+  async emit(record) {
+    try {
+      const logEntry = this.format(record);
 
-  const logger = createLogger({
-    levels: logLevels,
-    level: process.env.LOG_LEVEL || "info",
-    format: logFormat,
-    transports: [
-      new LokiTransport({
-        host: "http://localhost:3100",
-        labels: { job: name },
-        json: true,
-        format: json(),
-        replaceTimestamp: true,
-        onConnectionError: (err) => console.error(err),
-      }),
-      new transports.Console({
-        logFormat,
-      }),
-    ],
-  });
+      const data = {
+        streams: [
+          {
+            stream: {
+              app: this.name,
+              level: record.level,
+              trace_id: record.trace_id,
+            },
+            values: [[String(Date.now() * Math.pow(10, 6)), logEntry]],
+          },
+        ],
+      };
 
-  return logger;
+      const response = await axios.post(
+        "https://logs-prod-020.grafana.net/loki/api/v1/push",
+        data,
+        {
+          auth: {
+            username: 766976,
+            password:
+              "glc_eyJvIjoiMTAxMjYzNCIsIm4iOiJ0ZXN0LXRlc3QiLCJrIjoiazRkSTZsZjk1YXZIMDBXalhjOUk1NTRYIiwibSI6eyJyIjoidXMifX0=",
+          },
+        }
+      );
+      console.log(JSON.stringify(data));
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  format(record) {
+    return record.message;
+  }
 }
 
 function configureTracer(name) {
@@ -60,6 +71,7 @@ function configureTracer(name) {
     resource: new Resource({
       [SemanticResourceAttributes.SERVICE_NAME]: name,
     }),
+
     traceExporter: new OTLPTraceExporter(),
   });
   return trace;
@@ -85,7 +97,7 @@ function configureMeter(name) {
   return opentelemetry.metrics.setGlobalMeterProvider(myServiceMeterProvider);
 }
 module.exports = {
-  configureLogger,
+  LokiHandler,
   configureTracer,
   configureMeter,
 };

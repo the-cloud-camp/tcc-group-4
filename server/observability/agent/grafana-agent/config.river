@@ -78,18 +78,30 @@ otelcol.exporter.prometheus "default" {
 // https://grafana.com/docs/mimir/latest/references/http-api/#distributor
 prometheus.remote_write "mimir" {
   endpoint {
-    url = "http://mimir:9009/api/v1/push"
+    url   = "https://1335881:glc_eyJvIjoiMTAxMjYzNCIsIm4iOiJ0ZXN0LXRlc3QiLCJrIjoiazRkSTZsZjk1YXZIMDBXalhjOUk1NTRYIiwibSI6eyJyIjoidXMifX0=@prometheus-prod-37-prod-ap-southeast-1.grafana.net/api/prom/push"
   }
+}
+
+otelcol.auth.basic "prom" {
+  username = "1335881"
+  password = "glc_eyJvIjoiMTAxMjYzNCIsIm4iOiJ0ZXN0LXRlc3QiLCJrIjoiazRkSTZsZjk1YXZIMDBXalhjOUk1NTRYIiwibSI6eyJyIjoidXMifX0="
 }
 
 // Remote Write
 // https://grafana.com/docs/tempo/latest/api_docs/pushing-spans-with-http/#push-spans-with-otlp
 otelcol.exporter.otlp  "default" {
     client {
-        endpoint = "http://tempo:4317"
+        endpoint = "https://tempo-prod-14-prod-ap-southeast-1.grafana.net:443"
+        auth     = otelcol.auth.basic.tempo.handler
         tls {
             insecure             = true
             insecure_skip_verify = true
         }
     }
 }
+
+otelcol.auth.basic "tempo" {
+  username = "765829"
+  password = "glc_eyJvIjoiMTAxMjYzNCIsIm4iOiJ0ZXN0LXRlc3QiLCJrIjoiazRkSTZsZjk1YXZIMDBXalhjOUk1NTRYIiwibSI6eyJyIjoidXMifX0="
+}
+
