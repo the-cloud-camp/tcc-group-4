@@ -5,7 +5,11 @@ require('dotenv').config()
 const productRoute = require('./route/product.route')
 const txnRoute = require('./route/txn.route')
 const ticketRoute = require('./route/ticket.route')
-const { createChannel, updateRabbitMQConnection } = require('./rabbitmq')
+const {
+  updateRabbitMQConnection,
+  createProducerChannel,
+  createConsumerChannel,
+} = require('./rabbitmq')
 const { updateTxnController } = require('./controller/txn.controller')
 const app = express()
 
@@ -18,6 +22,7 @@ connectQueue()
 async function connectQueue() {
   try {
     const connection = await amqp.connect(`amqp://${connectionSvc}`)
+    const consumerConnection = await amqp.connect(`amqp://${connectionSvc}`)
     isConnected = true
     updateRabbitMQConnection(connection, isConnected)
 
@@ -35,21 +40,44 @@ async function connectQueue() {
       startInterval()
     })
 
-    const channel = await createChannel(connection, isConnected)
+    consumerConnection.on('close', () => {
+      console.log('connection closed')
+      isConnected = false
+      updateRabbitMQConnection(consumerConnection, isConnected)
+      startInterval()
+    })
+
+    consumerConnection.on('error', () => {
+      console.log('connection error')
+      isConnected = false
+      updateRabbitMQConnection(consumerConnection, isConnected)
+      startInterval()
+    })
+
+    const channel = await createProducerChannel(connection, isConnected)
+    const consumerChannel = await createConsumerChannel(
+      consumerConnection,
+      isConnected,
+    )
     paymentChannel = channel.paymentChannel
     emailChannel = channel.emailChannel
-    updateChannel = channel.updateChannel
+    updateChannel = consumerChannel.updateChannel
 
     updateChannel.consume(updateQueue, async (message) => {
-      if (message) {
-        const messageBody = JSON.parse(message.content.toString())
-        console.log(`Message received from RabbitMQ: ${messageBody}`)
-        await updateTxnController(messageBody)
-        updateChannel.ack(message)
+      try {
+        if (message && updateChannel) {
+          const messageBody = JSON.parse(message.content.toString())
+          console.log(`Message received from RabbitMQ: ${messageBody}`)
+          await updateTxnController(messageBody)
+          updateChannel.ack(message)
+        }
+      } catch (err) {
+        console.log(err)
       }
     })
   } catch (err) {
     console.log(err)
+    startInterval()
   }
 }
 

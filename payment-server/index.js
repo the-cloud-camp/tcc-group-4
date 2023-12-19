@@ -41,20 +41,25 @@ async function connectQueue() {
     receiveChannel.prefetch(1)
 
     receiveChannel.consume(receiveQueue, async (message) => {
-      if (message) {
-        console.log(` ${message.content.toString()}`)
-        const messageBody = JSON.parse(message.content.toString())
-        const txn = {
-          txnStatus: 'SUCCESS',
-          ...messageBody,
+      try {
+        if (message && receiveChannel) {
+          console.log(` ${message.content.toString()}`)
+          const messageBody = JSON.parse(message.content.toString())
+          const txn = {
+            txnStatus: 'SUCCESS',
+            ...messageBody,
+          }
+          console.log(`Message received from RabbitMQ: ${JSON.stringify(txn)}`)
+          await sendMessage(txn)
+          receiveChannel.ack(message)
         }
-        console.log(`Message received from RabbitMQ: ${JSON.stringify(txn)}`)
-        await sendMessage(txn)
-        receiveChannel.ack(message)
+      } catch (err) {
+        console.log(err)
       }
     })
   } catch (err) {
     console.log(err)
+    startInterval()
   }
 }
 
