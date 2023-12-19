@@ -31,3 +31,15 @@ jobs:
           push: true
           context: ./server
           tags: justtod/shobteeprajump-server:${{ steps.tag_version.outputs.new_tag }}
+      - name: Build and push - payment-server
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          context: ./payment-server
+          tags: justtod/shobteeprajump-payment-server:${{ steps.tag_version.outputs.new_tag }}
+      - name: Build and push - email-server
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          context: ./email-server
+          tags: justtod/shobteeprajump-email-server:${{ steps.tag_version.outputs.new_tag }}

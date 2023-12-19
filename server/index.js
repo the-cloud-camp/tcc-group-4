@@ -63,18 +63,25 @@ async function connectQueue() {
     emailChannel = channel.emailChannel
     updateChannel = consumerChannel.updateChannel
 
-    updateChannel.consume(updateQueue, async (message) => {
-      try {
-        if (message && updateChannel) {
-          const messageBody = JSON.parse(message.content.toString())
-          console.log(`Message received from RabbitMQ: ${messageBody}`)
-          await updateTxnController(messageBody)
-          updateChannel.ack(message)
+    updateChannel.prefetch(1)
+    updateChannel.consume(
+      updateQueue,
+      async (message) => {
+        try {
+          if (message && updateChannel) {
+            const messageBody = JSON.parse(message.content.toString())
+            console.log(`Message received from RabbitMQ: ${messageBody}`)
+            await updateTxnController(messageBody)
+            updateChannel.ack(message)
+          }
+        } catch (err) {
+          console.log(err)
         }
-      } catch (err) {
-        console.log(err)
-      }
-    })
+      },
+      {
+        noAck: false,
+      },
+    )
   } catch (err) {
     console.log(err)
     startInterval()

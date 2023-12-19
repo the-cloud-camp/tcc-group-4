@@ -38,22 +38,24 @@ async function connectQueue() {
     })
     receiveChannel.prefetch(1)
 
-    receiveChannel.consume(receiveQueue, async (message) => {
-      try {
-        if (message && receiveChannel) {
-          console.log(` ${message.content.toString()}`)
-          const messageBody = JSON.parse(message.content.toString())
-          console.log(
-            `Message received from RabbitMQ: ${JSON.stringify(
-              message.content.toString(),
-            )}`,
-          )
-          console.log(messageBody)
-          const txnDetailUrl = `${appUrl}/${messageBody.txnId}`
-          await sendingEmail({
-            email: messageBody.txn.email,
-            subject: `Payment ${messageBody.txn.email}`,
-            html: `
+    receiveChannel.consume(
+      receiveQueue,
+      async (message) => {
+        try {
+          if (message && receiveChannel) {
+            console.log(` ${message.content.toString()}`)
+            const messageBody = JSON.parse(message.content.toString())
+            console.log(
+              `Message received from RabbitMQ: ${JSON.stringify(
+                message.content.toString(),
+              )}`,
+            )
+            console.log(messageBody)
+            const txnDetailUrl = `${appUrl}/${messageBody.txnId}`
+            await sendingEmail({
+              email: messageBody.txn.email,
+              subject: `Payment ${messageBody.txn.email}`,
+              html: `
               <!DOCTYPE html>
               <html lang="en">
               <head>
@@ -77,14 +79,18 @@ async function connectQueue() {
               </body>
               </html>
           `,
-          })
-          console.log('Email sent')
-          receiveChannel.ack(message)
+            })
+            console.log('Email sent')
+            receiveChannel.ack(message)
+          }
+        } catch (err) {
+          console.log(err)
         }
-      } catch (err) {
-        console.log(err)
-      }
-    })
+      },
+      {
+        noAck: false,
+      },
+    )
   } catch (err) {
     console.log(err)
     startInterval()
