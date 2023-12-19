@@ -7,28 +7,41 @@ const app = express()
 const sendQueue = 'tcc-group-4-update-transaction1'
 const receiveQueue = 'tcc-group-4-payment1'
 const connectionSvc = process.env.RABBITMQ_SVC || 'localhost:5672'
-let receiveChannel, sendChannel, connection
+let receiveChannel, sendChannel, connection, consumerConnection
 let isConnected = false
 
 connectQueue()
 async function connectQueue() {
   try {
     connection = await amqp.connect(`amqp://${connectionSvc}`)
+    consumerConnection = await amqp.connect(`amqp://${connectionSvc}`)
     isConnected = true
-    connection.on('close', () => {
-      console.log('connection closed')
+    connection.on('close', (e) => {
+      console.log('connection closed', e)
       isConnected = false
       startInterval()
     })
 
-    connection.on('error', () => {
-      console.log('connection error')
+    connection.on('error', (e) => {
+      console.log('connection error', e)
+      isConnected = false
+      startInterval()
+    })
+
+    consumerConnection.on('close', (e) => {
+      console.log('connection closed', e)
+      isConnected = false
+      startInterval()
+    })
+
+    consumerConnection.on('error', (e) => {
+      console.log('connection error', e)
       isConnected = false
       startInterval()
     })
 
     sendChannel = await connection.createChannel()
-    receiveChannel = await connection.createChannel()
+    receiveChannel = await consumerConnection.createChannel()
     console.log('connected to rabbitmq')
 
     sendChannel.assertQueue(sendQueue, {
@@ -44,7 +57,7 @@ async function connectQueue() {
       receiveQueue,
       async (message) => {
         try {
-          if (message && receiveChannel) {
+          if (message && receiveChannel && sendChannel) {
             console.log(` ${message.content.toString()}`)
             const messageBody = JSON.parse(message.content.toString())
             const txn = {

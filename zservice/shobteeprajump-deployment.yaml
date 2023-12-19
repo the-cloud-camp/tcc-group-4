@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: shobteeprajump-app
-        image: diskette42/shobteeprajump-app:3.1.0
+        image:  justtod/shobteeprajump-server:v0.2.3
         env:
           - name: DATABASE_URL
             value: mysql://user:user@group4-mysql.group-4-dev:3306/stockdb
