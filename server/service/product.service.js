@@ -7,6 +7,8 @@ const createProductService = async (product) => {
     productImage,
     price,
     stock,
+    place,
+    eventDate,
   } = product
 
   if (!productName) throw new Error('Product name is required')
@@ -14,6 +16,8 @@ const createProductService = async (product) => {
   if (!productImage) throw new Error('Product image is required')
   if (!price) throw new Error('Product price is required')
   if (!stock) throw new Error('Product stock is required')
+  if (!place) throw new Error('Product place is required')
+  if (!eventDate) throw new Error('Product event date is required')
 
   return await prisma.product.create({
     data: {
@@ -22,6 +26,8 @@ const createProductService = async (product) => {
       productImage,
       price,
       stock,
+      place,
+      eventDate,
     },
   })
 }
@@ -47,6 +53,8 @@ const updateProductService = async (product) => {
     productImage,
     price,
     stock,
+    place,
+    eventDate,
   } = product
 
   const updateData = {}
@@ -56,6 +64,8 @@ const updateProductService = async (product) => {
   if (productImage) updateData.productImage = productImage
   if (price) updateData.price = price
   if (stock) updateData.stock = stock
+  if (place) updateData.place = place
+  if (eventDate) updateData.eventDate = eventDate
 
   return await prisma.product.update({
     where: {

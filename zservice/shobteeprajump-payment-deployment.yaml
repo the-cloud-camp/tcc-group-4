@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shobteeprajump-payment-deployment
+  creationTimestamp: null
+  labels:
+    app: shobteeprajump-payment-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: shobteeprajump-payment-app
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: shobteeprajump-payment-app
+    spec:
+      containers:
+      - name: shobteeprajump-payment-app
+        image: diskette42/shobteeprajump-payment-app:3.0.0
+        env:
+          - name: RABBITMQ_SVC
+            value: group4-rabbitmq.group-4-dev:5672
+          - name: PORT
+            value: "8001"
+        ports:
+          - containerPort: 8001
+        resources: {}
+status: {}

@@ -24,6 +24,8 @@ model Product {
   productImage String
   price Float
   stock Int
+  place String
+  eventDate String
   productTransactions ProductTransaction[]
 }
 

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shobteeprajump-deployment
+  creationTimestamp: null
+  labels:
+    app: shobteeprajump-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: shobteeprajump-app
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: shobteeprajump-app
+    spec:
+      containers:
+      - name: shobteeprajump-app
+        image: diskette42/shobteeprajump-app:3.1.0
+        env:
+          - name: DATABASE_URL
+            value: mysql://user:user@group4-mysql.group-4-dev:3306/stockdb
+          - name: PORT
+            value: "3000"
+          - name: RABBITMQ_SVC
+            value: group4-rabbitmq.group-4-dev:5672
+        ports:
+          - containerPort: 3000
+        resources: {}
+status: {}

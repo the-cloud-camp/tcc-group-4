@@ -25,9 +25,9 @@ jobs:
           push: true
           context: ./client
           tags: justtod/shobteeprajump-client:${{ steps.tag_version.outputs.new_tag }}
-      # - name: Build and push - server
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     push: true
-      #     context: ./server
-      #     tags: justtod/shobteeprajump-server:${{ steps.tag_version.outputs.new_tag }}
+      - name: Build and push - server
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          context: ./server
+          tags: justtod/shobteeprajump-server:${{ steps.tag_version.outputs.new_tag }}

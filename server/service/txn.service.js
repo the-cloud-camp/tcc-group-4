@@ -13,6 +13,9 @@ const getAllTxnsService = async () => {
       createdAt: true,
       txnStatus: true,
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
   })
   return data
 }
@@ -41,21 +44,28 @@ const createTxnService = async (txnInput) => {
         },
       },
     })
-
-    reserveProductAndPayService(products, createdTxn.txnId)
-    return createdTxn
+    console.log({ createdTxnId: createdTxn.txnId })
+    const isReserve = await reserveProductAndPayService(
+      products,
+      createdTxn.txnId,
+      txnAmount,
+    )
+    return {
+      isReserve,
+      ...createdTxn,
+    }
   } catch (err) {
     console.log(err)
     throw new Error(`error creating transaction ${err.message}`)
   }
 }
 
-const reserveProductAndPayService = async (products, txnId) => {
-  let txnStatus = 'FAILED'
+const reserveProductAndPayService = async (products, txnId, txnAmount) => {
   try {
     const tx = await prisma.$transaction(
       async (prisma) => {
         for (let i = 0; i < products.length; i++) {
+          console.log(`processing product ${products[i].id}`)
           const product = products[i]
           // Retrieve the current stock
           const currentProduct = await prisma.product.findUnique({
@@ -84,27 +94,16 @@ const reserveProductAndPayService = async (products, txnId) => {
             },
           })
         }
-        const paymentResult = await processPayment()
-        if (!paymentResult) throw new Error('Payment failed')
-        return paymentResult
+        return true
       },
       {
         timeout: 15000,
       },
     )
 
-    txnStatus = tx ? 'SUCCESS' : 'FAILED'
+    return tx
   } catch (err) {
     console.log(`error processing transaction ${err.message}`)
-  } finally {
-    return await prisma.transaction.update({
-      where: {
-        txnId: txnId,
-      },
-      data: {
-        txnStatus,
-      },
-    })
   }
 }
 
@@ -130,6 +129,8 @@ const getTxnByTxnIdService = async (txnId) => {
               productDescription: true,
               productImage: true,
               price: true,
+              place: true,
+              eventDate: true,
             },
           },
         },
@@ -216,6 +217,8 @@ const manipulateData = (data) => {
       productDescription: p.product.productDescription,
       productImage: p.product.productImage,
       price: p.product.price,
+      place: p.product.place,
+      eventDate: p.product.eventDate,
     })),
   }
 }

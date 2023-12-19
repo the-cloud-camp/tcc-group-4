@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: group4-rabbitmq
+spec:
+  serviceName: "group4-rabbitmq"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3.12
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          volumeMounts:
+            - name: rabbitmq-data
+              mountPath: /var/lib/rabbitmq/mnesia
+      volumes:
+        - name: rabbitmq-data
+          persistentVolumeClaim:
+            claimName: shobteeprajump-rabbitmq-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: group4-rabbitmq
+spec:
+  ports:
+    - protocol: TCP
+      port: 5672
+      name: rabbitmq
+      targetPort: 5672
+    - protocol: TCP
+      port: 15672
+      name: rabbitmq-management
+      targetPort: 15672
+  selector:
+    app: rabbitmq
