@@ -31,7 +31,7 @@ async function connectCheckoutQueue() {
     checkoutConnection.on('error', (err) => {
       if (err.message.includes('Connection closed')) {
         console.error('Checkout Connection closed, reconnecting...')
-        setTimeout(connectQueue, 5000)
+        setTimeout(connectCheckoutQueue, 5000)
       } else {
         console.error('Connection error:', err.message)
       }
