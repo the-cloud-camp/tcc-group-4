@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shobteeprajump-producer-deployment
+  creationTimestamp: null
+  labels:
+    app: shobteeprajump-producer-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: shobteeprajump-producer-app
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: shobteeprajump-producer-app
+    spec:
+      containers:
+      - name: shobteeprajump-producer-app
+        image: diskette42/producer
+        env:
+          - name: RABBITMQ_SVC
+            value: group4-rabbitmq2.group-4:5673
+          - name: PORT
+            value: "8003"
+        ports:
+          - containerPort: 8003
+        resources: {}
+status: {}

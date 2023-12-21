@@ -9,10 +9,6 @@ const receiveQueue = 'tcc-group-4-payment1'
 const connectionSvc = process.env.RABBITMQ_SVC || 'localhost:5672'
 let receiveChannel, sendChannel, connection, sendConnection
 let isConnected = false
-const fs = require('fs')
-const { send } = require('process')
-const logfilepath =
-  '/Users/supatat/Documents/Training/cloud-camp-project/app/tcc-group-4/server/logs/transaction_logs.txt'
 connectQueue()
 async function connectQueue() {
   try {
@@ -70,7 +66,6 @@ function startConsumer() {
     async (message) => {
       try {
         if (message) {
-          fs.appendFileSync(logfilepath, `${message.content.toString()}\n`)
           console.log(` ${message.content.toString()}`)
           const messageBody = JSON.parse(message.content.toString())
           console.log({ messageBody })
@@ -126,6 +121,5 @@ app.use(cors())
 app.use(express.json())
 
 app.listen(port, () => {
-  fs.writeFileSync(logfilepath, '')
   console.log(`Server is start at http://localhost:${port}`)
 })

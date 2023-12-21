@@ -1,8 +1,7 @@
 const { Prisma, PrismaClient } = require('@prisma/client')
 const { processPayment } = require('./payment.service')
-const fs = require('fs')
-const logfilepath =
-  '/Users/supatat/Documents/Training/cloud-camp-project/app/tcc-group-4/server/logs/transaction_logs.txt'
+// const fs = require('fs')
+// const logfilepath = '../logs/transaction_logs.txt'
 const prisma = new PrismaClient()
 
 const getAllTxnsService = async () => {
@@ -61,7 +60,6 @@ const createTxnService = async (txnInput) => {
     if (!createdTxn) {
       throw new Error(`Error creating transaction`)
     }
-
     createdTxn = await prisma.transaction.update({
       where: {
         txnId: createdTxn.txnId,
@@ -124,6 +122,9 @@ const reserveProductAndPayService = async (products, txnId, txnAmount) => {
             await prisma.product.update({
               where: {
                 productId: product.id,
+                stock: {
+                  gt: 0,
+                },
               },
               data: {
                 stock: {
@@ -131,6 +132,8 @@ const reserveProductAndPayService = async (products, txnId, txnAmount) => {
                 },
               },
             })
+          } catch (err) {
+            throw new Error(`${err.message}`)
           } finally {
             // Release the lock
             isLock = false
@@ -145,6 +148,7 @@ const reserveProductAndPayService = async (products, txnId, txnAmount) => {
 
     return tx
   } catch (err) {
+    // fs.appendFileSync(logfilepath, `error ${txnId} :  ${err.message}\n`)
     console.log(`error processing transaction ${err.message}`)
     throw new Error(`${err.message}`)
   }
@@ -205,9 +209,9 @@ const updateTxnSuccessStatusService = async (txnId) => {
       },
     })
 
-    fs.appendFileSync(logfilepath, `database update: ${txnId} : SUCCESS\n`)
+    // fs.appendFileSync(logfilepath, `database update: ${txnId} : SUCCESS\n`)
   } catch (err) {
-    fs.appendFileSync(logfilepath, `${txnId} : ${err.message}\n`)
+    // fs.appendFileSync(logfilepath, `error ${txnId} :  ${err.message}\n`)
     return new Error(`error processing transaction ${err.message}`)
   }
 }

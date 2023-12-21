@@ -1,4 +1,4 @@
-const fs = require('fs')
+// const fs = require('fs')
 const { isRabbitMQConnectedFunc } = require('../rabbitmq')
 const { sendingEmail, sendEmail } = require('../service/email.service')
 const { processPayment } = require('../service/payment.service')
@@ -9,14 +9,46 @@ const {
   rollbackTxnService,
   getTxnByTxnIdService,
 } = require('../service/txn.service')
-const logfilepath =
-  '/Users/supatat/Documents/Training/cloud-camp-project/app/tcc-group-4/server/logs/transaction_logs.txt'
+// const logfilepath = '../logs/transaction_logs.txt'
 const getAllTxnsController = async (req, res) => {
   try {
     const data = await getAllTxnsService()
     res.json(data)
   } catch (err) {
     res.status(500).json({ error: err.message })
+  }
+}
+
+const createTxnControllerConsumerAction = async (message) => {
+  try {
+    console.log('message you got from checkout queue')
+    console.log(message)
+    if (!isRabbitMQConnectedFunc()) return
+    const data = await createTxnService(message.txn)
+
+    // console.log(data.createdTxn)
+    // console.log(data.isReserve)
+    if (!data.isReserve) return
+
+    const { txnId, txnAmount, ...createdTxn } = data.createdTxn
+
+    // fs.appendFileSync(
+    //   logfilepath,
+    //   `${txnId} : ${txnAmount} : ${createdTxn.txnStatus}\n`,
+    // )
+
+    await processPayment({
+      txnId: txnId,
+      txnAmount: txnAmount,
+    })
+
+    const emailContext = {
+      ...message,
+      txnId: txnId,
+    }
+    await sendEmail(emailContext)
+  } catch (err) {
+    console.log(err)
   }
 }
 
@@ -36,14 +68,9 @@ const createTxnController = async (req, res) => {
 
     const { txnId, txnAmount, ...createdTxn } = data.createdTxn
 
-    fs.appendFileSync(
-      logfilepath,
-      `${txnId} : ${txnAmount} : ${createdTxn.txnStatus}\n`,
-    )
-
-    // fs.writeFileSync(
-    //   '/Users/supatat/Documents/Training/cloud-camp-project/app/tcc-group-4/server/logs',
-    //   `${txnId} : ${txnAmount} : ${createdTxn.txnStatus}`,
+    // fs.appendFileSync(
+    //   logfilepath,
+    //   `${txnId} : ${txnAmount} : ${createdTxn.txnStatus}\n`,
     // )
 
     await processPayment({
@@ -92,4 +119,5 @@ module.exports = {
   createTxnController,
   updateTxnController,
   getTxnByTxnIdController,
+  createTxnControllerConsumerAction,
 }
