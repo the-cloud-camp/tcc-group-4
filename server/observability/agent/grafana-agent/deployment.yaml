@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: shobteeprajump-obs
+  name: shobteeprajump-obs
+  namespace: group-4-obs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shobteeprajump-obs
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: shobteeprajump-obs
+    spec:
+      containers:
+      - args:
+        - run
+        - /etc/agent/config.river
+        - --server.http.listen-addr=0.0.0.0:12345
+        env:
+        - name: AGENT_MODE
+          value: flow
+        image: grafana/agent
+        imagePullPolicy: Always
+        name: agent
+        ports:
+        - containerPort: 4317
+          name: grpc-otel
+          protocol: TCP
+        - containerPort: 4318
+          name: http-otel
+          protocol: TCP
+        - containerPort: 9999
+          name: agent
+          protocol: TCP
+        - containerPort: 12345
+          name: agentdashboard
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /etc/agent
+          name: grafrana-agent-config
+          readOnly: true
+      volumes:
+      - name: grafrana-agent-config
+        configMap:
+          name: grafana-agent-group-4-obs
+          
