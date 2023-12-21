@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shobteeprajump-rabbitmq2-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: shobteeprajump-rabbitmq2-pv
+  storageClassName: shobteeprajump-storage-c

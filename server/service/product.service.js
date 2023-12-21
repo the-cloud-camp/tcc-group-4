@@ -63,7 +63,7 @@ const updateProductService = async (product) => {
   if (productDescription) updateData.productDescription = productDescription
   if (productImage) updateData.productImage = productImage
   if (price) updateData.price = price
-  if (stock) updateData.stock = stock
+  if (stock != undefined || stock != null) updateData.stock = stock
   if (place) updateData.place = place
   if (eventDate) updateData.eventDate = eventDate
 

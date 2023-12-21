@@ -19,10 +19,12 @@ spec:
     spec:
       containers:
       - name: shobteeprajump-email-app
-        image: diskette42/shobteeprajump-email-app:3.0.0
+        image: diskette42/email
         env:
           - name: RABBITMQ_SVC
-            value: group4-rabbitmq.group-4-dev:5672
+            value: group4-rabbitmq.group-4:5672
+          - name: APP_URL
+            value: http://shobteeprajump-app.com
           - name: PORT
             value: "8002"
         ports:

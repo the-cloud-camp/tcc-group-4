@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: group4-rabbitmq
+  name: group4-rabbitmq2
 spec:
-  serviceName: "group4-rabbitmq"
+  serviceName: "group4-rabbitmq2"
   replicas: 1
   selector:
     matchLabels:
-      app: rabbitmq
+      app: rabbitmq2
   template:
     metadata:
       labels:
-        app: rabbitmq
+        app: rabbitmq2
     spec:
       containers:
         - name: rabbitmq
@@ -25,5 +25,4 @@ spec:
       volumes:
         - name: rabbitmq-data
           persistentVolumeClaim:
-            claimName: shobteeprajump-rabbitmq-pvc
-
+            claimName: shobteeprajump-rabbitmq2-pvc

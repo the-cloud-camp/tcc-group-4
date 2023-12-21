@@ -1,0 +1,7 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: shobteeprajump-storage-c
+reclaimPolicy: Retain
+volumeBindingMode: WaitForFirstConsumer
+provisioner: kubernetes.io/no-provisioner

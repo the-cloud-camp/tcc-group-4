@@ -4,45 +4,27 @@ const emailQueue = 'tcc-group-4-email1'
 const updateQueue = 'tcc-group-4-update-transaction1'
 let RabbitMQConnection, isRabbitMQConnected
 
-const createProducerChannel = async (connection, isConnected) => {
-  try {
-    RabbitMQConnection = connection
-    isRabbitMQConnected = isConnected
-    paymentChannel = await connection.createChannel()
-    emailChannel = await connection.createChannel()
-    updateChannel = await connection.createChannel()
+const createChannel = async (connection, isConnected) => {
+  RabbitMQConnection = connection
+  isRabbitMQConnected = isConnected
+  paymentChannel = await connection.createChannel()
+  emailChannel = await connection.createChannel()
+  updateChannel = await connection.createChannel()
 
-    paymentChannel.assertQueue(paymentQueue, {
-      durable: true,
-    })
+  paymentChannel.assertQueue(paymentQueue, {
+    durable: true,
+  })
 
-    emailChannel.assertQueue(emailQueue, {
-      durable: true,
-    })
+  emailChannel.assertQueue(emailQueue, {
+    durable: true,
+  })
 
-    console.log('connected to rabbitmq payment/email channel')
+  updateChannel.assertQueue(updateQueue, {
+    durable: true,
+  })
+  console.log('connected to rabbitmq')
 
-    return { paymentChannel, emailChannel }
-  } catch (err) {
-    console.log(err)
-  }
-}
-
-const createConsumerChannel = async (connection, isConnected) => {
-  try {
-    RabbitMQConnection = connection
-    isRabbitMQConnected = isConnected
-
-    updateChannel = await connection.createChannel()
-    updateChannel.assertQueue(updateQueue, {
-      durable: true,
-    })
-    console.log('connected to rabbitmq update channel')
-
-    return { updateChannel }
-  } catch (err) {
-    console.log(err)
-  }
+  return { paymentChannel, emailChannel, updateChannel }
 }
 
 const sendQueuePayment = async (message) => {
@@ -86,8 +68,7 @@ function updateRabbitMQConnection(connection, isConnected) {
 }
 
 module.exports = {
-  createProducerChannel,
-  createConsumerChannel,
+  createChannel,
   sendQueuePayment,
   sendQueueEmail,
   isRabbitMQConnectedFunc,

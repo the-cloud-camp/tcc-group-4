@@ -9,7 +9,6 @@ const app = express()
 const receiveQueue = 'tcc-group-4-email1'
 let receiveChannel, connection
 const connectionSvc = process.env.RABBITMQ_SVC || 'localhost:5672'
-let isConnected = false
 const appUrl = process.env.APP_URL || 'http://127.0.0.1:5173'
 
 connectQueue()
@@ -17,17 +16,14 @@ connectQueue()
 async function connectQueue() {
   try {
     connection = await amqp.connect(`amqp://${connectionSvc}`)
-    isConnected = true
-    connection.on('close', () => {
-      console.log('connection closed')
-      isConnected = false
-      startInterval()
-    })
 
-    connection.on('error', () => {
-      console.log('connection error')
-      isConnected = false
-      startInterval()
+    connection.on('error', (err) => {
+      if (err.message.includes('Connection closed')) {
+        console.error('Connection closed, reconnecting...')
+        setTimeout(connectQueue, 5000) // Retry connection
+      } else {
+        console.error('Connection error:', err.message)
+      }
     })
 
     receiveChannel = await connection.createChannel()
@@ -38,62 +34,73 @@ async function connectQueue() {
     })
     receiveChannel.prefetch(1)
 
-    receiveChannel.consume(
-      receiveQueue,
-      async (message) => {
-        try {
-          if (message && receiveChannel) {
-            console.log(` ${message.content.toString()}`)
-            const messageBody = JSON.parse(message.content.toString())
-            console.log(
-              `Message received from RabbitMQ: ${JSON.stringify(
-                message.content.toString(),
-              )}`,
-            )
-            console.log(messageBody)
-            const txnDetailUrl = `${appUrl}/${messageBody.txnId}`
-            await sendingEmail({
-              email: messageBody.txn.email,
-              subject: `Payment ${messageBody.txn.email}`,
-              html: `
-              <!DOCTYPE html>
-              <html lang="en">
-              <head>
-                  <meta charset="UTF-8">
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                  <title>Email Invoice</title>
-              </head>
-              <body>
-                  <h2>Invoice Details</h2>
-                  <p><strong>Email:</strong> ${messageBody.txn.email}</p>
-                  <p><strong>Item:</strong> ${messageBody.txn.item}</p>
-                  <p><strong>Phone Number:</strong> ${
-                    messageBody.txn.phoneNumber
-                  }</p>
-                  <p><strong>Transaction Amount:</strong> $${messageBody.txn.txnAmount.toFixed(
-                    2,
-                  )}</p>
-
-                  <!-- Payment Button -->
-                  <a href="${txnDetailUrl}" class="button-link">Detail</a>
-              </body>
-              </html>
-          `,
-            })
-            console.log('Email sent')
-            receiveChannel.ack(message)
-          }
-        } catch (err) {
-          console.log(err)
-        }
-      },
-      {
-        noAck: false,
-      },
-    )
+    startConsumer()
   } catch (err) {
     console.log(err)
-    startInterval()
+    setTimeout(connectQueue, 5000)
+  }
+}
+
+function startConsumer() {
+  if (!connection) {
+    console.log('not connected')
+    return
+  }
+
+  receiveChannel.consume(receiveQueue, async (message) => {
+    if (message) {
+      console.log(` ${message.content.toString()}`)
+      const messageBody = JSON.parse(message.content.toString())
+      console.log(
+        `Message received from RabbitMQ: ${JSON.stringify(
+          message.content.toString(),
+        )}`,
+      )
+      console.log(messageBody)
+      await sendingEmail(getEmailContext(messageBody))
+      console.log('Email sent')
+      receiveChannel.ack(message)
+    }
+  })
+
+  receiveChannel.on('close', () => {
+    console.error('Channel closed, reconnecting...')
+    setTimeout(connectQueue, 5000)
+  })
+
+  receiveChannel.on('error', (error) => {
+    console.error('Channel error:', error.message)
+  })
+}
+
+const getEmailContext = (messageBody) => {
+  const txnDetailUrl = `${appUrl}/${messageBody.txnId}`
+
+  return {
+    email: messageBody.txn.email,
+    subject: `Payment ${messageBody.txn.email}`,
+    html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Email Invoice</title>
+        </head>
+        <body>
+            <h2>Invoice Details</h2>
+            <p><strong>Email:</strong> ${messageBody.txn.email}</p>
+            <p><strong>Item:</strong> ${messageBody.txn.item}</p>
+            <p><strong>Phone Number:</strong> ${messageBody.txn.phoneNumber}</p>
+            <p><strong>Transaction Amount:</strong> $${messageBody.txn.txnAmount.toFixed(
+              2,
+            )}</p>
+
+            <!-- Payment Button -->
+            <a href="${txnDetailUrl}" class="button-link">Detail</a>
+        </body>
+        </html>
+    `,
   }
 }
 
@@ -133,17 +140,3 @@ app.use(express.json())
 app.listen(port, () => {
   console.log(`Server is start at http://localhost:${port}`)
 })
-
-const startInterval = () => {
-  const intervalId = setInterval(() => {
-    if (isConnected) {
-      console.log('RabbitMQ is connected. Stop checking.')
-      clearInterval(intervalId)
-    } else {
-      console.log('RabbitMQ is not connected. Attempting to reconnect...')
-      connectQueue()
-    }
-  }, 1000)
-}
-
-startInterval()

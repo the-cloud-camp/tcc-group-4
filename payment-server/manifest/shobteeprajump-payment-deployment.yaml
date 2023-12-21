@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: shobteeprajump-email-deployment
+  name: shobteeprajump-payment-deployment
   creationTimestamp: null
   labels:
-    app: shobteeprajump-email-app
+    app: shobteeprajump-payment-app
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: shobteeprajump-email-app
+      app: shobteeprajump-payment-app
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: shobteeprajump-email-app
+        app: shobteeprajump-payment-app
     spec:
       containers:
-      - name: shobteeprajump-email-app
-        image: diskette42/shobteeprajump-email-app:3.0.0
+      - name: shobteeprajump-payment-app
+        image: diskette42/payment
         env:
           - name: RABBITMQ_SVC
-            value: group4-rabbitmq.group-4-dev:5672
+            value: group4-rabbitmq.group-4:5672
           - name: PORT
-            value: "8002"
+            value: "8001"
         ports:
-          - containerPort: 8002
+          - containerPort: 8001
         resources: {}
 status: {}

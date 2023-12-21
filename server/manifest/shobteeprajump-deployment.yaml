@@ -19,14 +19,16 @@ spec:
     spec:
       containers:
       - name: shobteeprajump-app
-        image: diskette42/shobteeprajump-app
+        image: diskette42/app
         env:
           - name: DATABASE_URL
-            value: mysql://user:user@group4-mysql.group-4-dev:3306/stockdb
+            value: mysql://user:user@group4-mysql.group-4:3306/stockdb
           - name: PORT
             value: "3000"
           - name: RABBITMQ_SVC
-            value: group4-rabbitmq.group-4-dev:5672
+            value: group4-rabbitmq.group-4:5672
+          - name: CONSUME_CHECKOUT_SVC
+            value: group4-rabbitmq2.group-4:5673
         ports:
           - containerPort: 3000
         resources: {}

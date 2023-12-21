@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: group4-rabbitmq2
+spec:
+  ports:
+    - protocol: TCP
+      port: 5673
+      name: rabbitmq
+      targetPort: 5672
+    - protocol: TCP
+      port: 15673
+      name: rabbitmq-management
+      targetPort: 15672
+  selector:
+    app: rabbitmq2
