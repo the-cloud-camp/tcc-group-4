@@ -11,7 +11,11 @@ const {
   createConsumerChannel,
 } = require("./rabbitmq");
 const { updateTxnController } = require("./controller/txn.controller");
+const responseTime = require("response-time");
+const { logResponseTime } = require("./middleware/responseTimeLogger");
+const { logError } = require("./middleware/errorLogger");
 const app = express();
+const port = process.env.PORT || 8000;
 
 let connectionSvc = process.env.RABBITMQ_SVC || "localhost:5672";
 let paymentChannel, emailChannel, updateChannel;
@@ -92,10 +96,6 @@ const port = process.env.PORT || 8000;
 const responseTime = require("response-time");
 
 const init = () => {
-  const initTrace = configureTracer("group-4");
-  initTrace.start();
-
-  const tracer = trace.getTracer("group-4");
   app.use(cors());
   app.use(express.json());
   app.use(responseTime(logResponseTime));
