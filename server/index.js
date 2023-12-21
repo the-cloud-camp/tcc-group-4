@@ -15,7 +15,6 @@ const responseTime = require("response-time");
 const { logResponseTime } = require("./middleware/responseTimeLogger");
 const { logError } = require("./middleware/errorLogger");
 const app = express();
-const port = process.env.PORT || 8000;
 
 let connectionSvc = process.env.RABBITMQ_SVC || "localhost:5672";
 let paymentChannel, emailChannel, updateChannel;
@@ -93,7 +92,6 @@ async function connectQueue() {
 }
 
 const port = process.env.PORT || 8000;
-const responseTime = require("response-time");
 
 const init = () => {
   app.use(cors());
