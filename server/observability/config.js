@@ -72,7 +72,9 @@ function configureTracer(name) {
       [SemanticResourceAttributes.SERVICE_NAME]: name,
     }),
 
-    traceExporter: new OTLPTraceExporter(),
+    traceExporter: new OTLPTraceExporter({
+      url: "10.239.56.8:4318",
+    }),
   });
   return trace;
 }
@@ -83,7 +85,9 @@ function configureMeter(name) {
   });
 
   const metricReader = new PeriodicExportingMetricReader({
-    exporter: new OTLPMetricExporter(),
+    exporter: new OTLPMetricExporter({
+      url: "10.239.56.8:4318",
+    }),
 
     exportIntervalMillis: 3000,
   });
