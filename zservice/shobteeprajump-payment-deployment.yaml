@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: shobteeprajump-payment-app
-        image: diskette42/shobteeprajump-payment-app:3.0.0
+        image: diskette42/shobteeprajump-payment-app
         env:
           - name: RABBITMQ_SVC
             value: group4-rabbitmq.group-4-dev:5672

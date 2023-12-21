@@ -7,27 +7,39 @@ const app = express()
 const sendQueue = 'tcc-group-4-update-transaction1'
 const receiveQueue = 'tcc-group-4-payment1'
 const connectionSvc = process.env.RABBITMQ_SVC || 'localhost:5672'
-let receiveChannel, sendChannel, connection
+let receiveChannel, sendChannel, connection, sendConnection
 let isConnected = false
-
+const fs = require('fs')
+const { send } = require('process')
+const logfilepath =
+  '/Users/supatat/Documents/Training/cloud-camp-project/app/tcc-group-4/server/logs/transaction_logs.txt'
 connectQueue()
 async function connectQueue() {
   try {
     connection = await amqp.connect(`amqp://${connectionSvc}`)
-    isConnected = true
-    connection.on('close', () => {
-      console.log('connection closed')
+    sendConnection = await amqp.connect(`amqp://${connectionSvc}`)
+
+    sendConnection.on('error', (err) => {
       isConnected = false
-      startInterval()
+      if (err.message.includes('Connection closed')) {
+        console.error('Connection closed, reconnecting...')
+        setTimeout(connectQueue, 5000) // Retry connection
+      } else {
+        console.error('Connection error:', err.message)
+      }
     })
 
-    connection.on('error', () => {
-      console.log('connection error')
+    connection.on('error', (err) => {
       isConnected = false
-      startInterval()
+      if (err.message.includes('Connection closed')) {
+        console.error('Connection closed, reconnecting...')
+        setTimeout(connectQueue, 5000) // Retry connection
+      } else {
+        console.error('Connection error:', err.message)
+      }
     })
 
-    sendChannel = await connection.createChannel()
+    sendChannel = await sendConnection.createChannel()
     receiveChannel = await connection.createChannel()
     console.log('connected to rabbitmq')
 
@@ -40,22 +52,60 @@ async function connectQueue() {
     })
     receiveChannel.prefetch(1)
 
-    receiveChannel.consume(receiveQueue, async (message) => {
-      if (message) {
-        console.log(` ${message.content.toString()}`)
-        const messageBody = JSON.parse(message.content.toString())
-        const txn = {
-          txnStatus: 'SUCCESS',
-          ...messageBody,
-        }
-        console.log(`Message received from RabbitMQ: ${JSON.stringify(txn)}`)
-        await sendMessage(txn)
-        receiveChannel.ack(message)
-      }
-    })
+    startConsumer()
   } catch (err) {
     console.log(err)
+    setTimeout(connectQueue, 5000)
   }
+}
+
+function startConsumer() {
+  if (!connection) {
+    console.log('not connected')
+    return
+  }
+
+  receiveChannel.consume(
+    receiveQueue,
+    async (message) => {
+      try {
+        if (message) {
+          fs.appendFileSync(logfilepath, `${message.content.toString()}\n`)
+          console.log(` ${message.content.toString()}`)
+          const messageBody = JSON.parse(message.content.toString())
+          console.log({ messageBody })
+          const txn = {
+            txnStatus: 'SUCCESS',
+            ...messageBody,
+          }
+          console.log(`Message received from RabbitMQ: ${JSON.stringify(txn)}`)
+          await sendMessage(txn)
+          receiveChannel.ack(message)
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    { noAck: false },
+  )
+
+  sendChannel.on('close', () => {
+    console.error('Channel closed, reconnecting...')
+    setTimeout(connectQueue, 5000)
+  })
+
+  sendChannel.on('error', (error) => {
+    console.error('Channel error:', error.message)
+  })
+
+  receiveChannel.on('close', () => {
+    console.error('Channel closed, reconnecting...')
+    setTimeout(connectQueue, 5000)
+  })
+
+  receiveChannel.on('error', (error) => {
+    console.error('Channel error:', error.message)
+  })
 }
 
 async function sendMessage(message) {
@@ -76,19 +126,6 @@ app.use(cors())
 app.use(express.json())
 
 app.listen(port, () => {
+  fs.writeFileSync(logfilepath, '')
   console.log(`Server is start at http://localhost:${port}`)
 })
-
-const startInterval = () => {
-  const intervalId = setInterval(() => {
-    if (isConnected) {
-      console.log('RabbitMQ is connected. Stop checking.')
-      clearInterval(intervalId)
-    } else {
-      console.log('RabbitMQ is not connected. Attempting to reconnect...')
-      connectQueue()
-    }
-  }, 1000)
-}
-
-startInterval()
