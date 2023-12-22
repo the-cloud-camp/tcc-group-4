@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shobteeprajump-client-deployment
+  creationTimestamp: null
+  labels:
+    app: shobteeprajump-client
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: shobteeprajump-client
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: shobteeprajump-client
+    spec:
+      containers:
+      - name: shobteeprajump-client
+        image: justtod/shobteeprajump-client:v0.5.3
+        env:
+          - name: VITE_API_URL
+            value: https://tcc-01.th1.proen.cloud
+        ports:
+          - containerPort: 80
+        resources: {}
+status: {}

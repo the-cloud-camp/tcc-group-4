@@ -26,5 +26,13 @@ spec:
               number: 8003
         path: /group-4/ticket(/|$)(.*)
         pathType: Exact
+      - backend:
+          service:
+            name: shobteeprajump-client-service
+            port:
+              number: 3002
+        path: /group-4/client(/|$)(.*)
+        pathType: Exact
+        
 status:
   loadBalancer: {}
