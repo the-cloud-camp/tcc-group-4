@@ -74,7 +74,7 @@ function startConsumer() {
 }
 
 const getEmailContext = (messageBody) => {
-  const txnDetailUrl = `${appUrl}/${messageBody.txnId}`
+  const txnDetailUrl = `${appUrl}?txn=${messageBody.txnId}`
 
   return {
     email: messageBody.txn.email,

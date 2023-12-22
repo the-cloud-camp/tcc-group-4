@@ -5,16 +5,11 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Index from './pages/Index'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
-import TxnDetail from './pages/TxnDetail'
 
 const router = createBrowserRouter([
   {
-    path: "/group-4/client",
+    path: '/group-4/client',
     element: <Index />,
-  },
-  {
-    path: '/group-4/client/:txnId',
-    element: <TxnDetail />,
   },
 ])
 

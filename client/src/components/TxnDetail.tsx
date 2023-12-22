@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useCallback, useEffect, useState } from 'react'
-import RedeemTicketModal from '../components/RedeemTicketModal'
+import RedeemTicketModal from './RedeemTicketModal'
 
 interface Txn {
   txnId: string
@@ -22,9 +22,9 @@ interface TicketList {
   eventDate: string
 }
 
-const TxnDetail = () => {
+const TxnDetail: React.FC<{ txnId: string }> = ({ txnId }) => {
   //get txnId from url
-  const txnId = window.location.pathname.split('/')[1]
+  // const txnId = window.location.pathname.split('/')[1]
   const [txn, setTxn] = useState<Txn>()
   const [ticket, setTicket] = useState<TicketList>()
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)

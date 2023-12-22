@@ -1,5 +1,5 @@
 import { XMarkIcon } from '@heroicons/react/24/outline'
-import React from 'react'
+import React, { FormEvent } from 'react'
 
 interface TicketList {
   ticketId: string
@@ -24,6 +24,16 @@ const RedeemTicketModal: React.FC<RedeemTicketModalProps> = ({
   handleSubmitRedeem,
   handleCloseModal,
 }) => {
+  const handleFormSubmit = async (event: FormEvent) => {
+    event.preventDefault()
+
+    try {
+      await handleSubmitRedeem()
+      handleCloseModal()
+    } catch (error) {
+      console.error('Error redeeming ticket:', error)
+    }
+  }
   return (
     <section
       id="modal-container"
@@ -31,7 +41,7 @@ const RedeemTicketModal: React.FC<RedeemTicketModalProps> = ({
     >
       <form
         className="rounded-lg bg-white p-4 relative w-[400px] z-50 "
-        onSubmit={handleSubmitRedeem}
+        onSubmit={handleFormSubmit}
       >
         <div className="w-full">
           <div>
