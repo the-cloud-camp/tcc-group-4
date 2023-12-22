@@ -30,6 +30,7 @@ const ConcertModal = () => {
           amount: 1,
         })
       );
+
       const response = await axios.post(
         import.meta.env.VITE_API_URL + "/group-4/ticket/checkout",
         {
@@ -41,9 +42,9 @@ const ConcertModal = () => {
               selectedConcert.amount * selectedConcert.item.price
             ),
             products: [
-              {
-                id: selectedConcert.item.productId,
-              },
+              Array.from({ length: selectedConcert.amount }, () => {
+                return { id: selectedConcert.item?.productId };
+              }),
             ],
           },
         }
@@ -135,14 +136,13 @@ const ConcertModal = () => {
               <div className="flex items-center gap-2">
                 <CalendarDaysIcon className="w-5 h-5" />
                 <p className="text-sm truncate">
-                  {new Date(selectedConcert.item.eventDate || 2023).toLocaleString(
-                    "default",
-                    {
-                      day: "2-digit",
-                      month: "long",
-                      year: "numeric",
-                    }
-                  )}
+                  {new Date(
+                    selectedConcert.item.eventDate || 2023
+                  ).toLocaleString("default", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })}
                 </p>
               </div>
               <div className="flex items-center gap-2">
