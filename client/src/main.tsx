@@ -9,11 +9,11 @@ import TxnDetail from './pages/TxnDetail'
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/group-4/client',
     element: <Index />,
   },
   {
-    path: '/:txnId',
+    path: '/group-4/client:txnId',
     element: <TxnDetail />,
   },
 ])
