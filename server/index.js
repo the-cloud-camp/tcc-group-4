@@ -1,7 +1,10 @@
 const express = require('express')
 const amqp = require('amqplib')
 const cors = require('cors')
+const responseTime = require('response-time')
 require('dotenv').config()
+const { logResponseTime } = require('./middleware/responseTimeLogger')
+const { logError } = require('./middleware/errorLogger')
 const productRoute = require('./route/product.route')
 const txnRoute = require('./route/txn.route')
 const ticketRoute = require('./route/ticket.route')
@@ -10,6 +13,7 @@ const {
   updateTxnController,
   createTxnControllerConsumerAction,
 } = require('./controller/txn.controller')
+
 const app = express()
 
 let connectionSvc = process.env.RABBITMQ_SVC || 'localhost:5672'
@@ -165,13 +169,22 @@ function startRecieveCheckoutConsumer() {
 
 const port = process.env.PORT || 8000
 
-app.use(cors())
-app.use(express.json())
-app.use('/product', productRoute)
-app.use('/txn', txnRoute)
-app.use('/ticket', ticketRoute)
+const init = () => {
+  app.use(cors())
+  app.use(express.json())
+  app.use(responseTime(logResponseTime))
+  app.use('/product', productRoute)
+  app.use('/txn', txnRoute)
+  app.use('/ticket', ticketRoute)
 
-app.listen(port, () => {
-  // fs.writeFileSync(logfilepath, '')
-  console.log(`Server is start at http://localhost:${port}`)
-})
+  app.get('/health', (req, res) => {
+    return res.send('OK')
+  })
+
+  app.use(logError)
+  app.listen(port, () => {
+    console.log(`Server is start at http://localhost:${port}`)
+  })
+}
+
+init()

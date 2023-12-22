@@ -11,14 +11,27 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@opentelemetry/exporter-logs-otlp-http": "^0.46.0",
+    "@opentelemetry/exporter-metrics-otlp-proto": "^0.46.0",
+    "@opentelemetry/exporter-trace-otlp-proto": "^0.46.0",
+    "@opentelemetry/resources": "^1.19.0",
+    "@opentelemetry/sdk-logs": "^0.46.0",
+    "@opentelemetry/sdk-metrics": "^1.19.0",
+    "@opentelemetry/sdk-node": "^0.46.0",
+    "@opentelemetry/semantic-conventions": "^1.19.0",
     "@prisma/client": "^5.6.0",
     "amqplib": "^0.10.3",
+    "axios": "^1.6.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
     "nodemailer": "^6.9.7",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "prettier": "^3.1.1",
+    "response-time": "^2.3.2",
+    "winston": "^3.11.0",
+    "winston-loki": "^6.0.8"
   },
   "devDependencies": {
     "prisma": "^5.6.0"

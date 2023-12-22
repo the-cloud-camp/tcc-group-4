@@ -3,8 +3,6 @@ RUN mkdir /app
 COPY package*.json /app
 WORKDIR /app
 COPY . .
-RUN npm install
-# RUN npx prisma db push
-# RUN npx prisma generate
-EXPOSE 3000 
+RUN npx prisma generate
+EXPOSE 8000 
 CMD ["npm", "start"]

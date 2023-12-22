@@ -1,15 +1,18 @@
+version: '3'
+
 services:
-#   backend:
-#     build: .
-#     ports:
-#       - "3000:3000"
-#     depends_on:
-#       - mysql
-#     environment:
-#       - DB_HOST=mysql
-#       - DB_USER=user
-#       - DB_PASSWORD=user
-#       - DB_NAME=stockdb
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=user
+      - DB_PASSWORD=user
+      - DB_NAME=stockdb
+
   mysql:
     image: mysql:8.2.0
     ports:

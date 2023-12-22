@@ -1,0 +1,17 @@
+# Use the official Grafana Agent image
+FROM grafana/agent:latest
+
+# Set the working directory
+WORKDIR /etc/agent
+
+# Copy the configuration file to the container
+COPY config.river /etc/agent/config.river
+
+# Set environment variable for agent mode
+ENV AGENT_MODE=flow
+
+# Expose necessary ports
+EXPOSE 4318 12345
+
+# Command to run the Grafana Agent
+CMD ["run", "--server.http.listen-addr=0.0.0.0:12345", "/etc/agent/config.river"]
