@@ -26,16 +26,9 @@ const createTxnControllerConsumerAction = async (message) => {
     if (!isRabbitMQConnectedFunc()) return
     const data = await createTxnService(message.txn)
 
-    // console.log(data.createdTxn)
-    // console.log(data.isReserve)
     if (!data.isReserve) return
 
     const { txnId, txnAmount, ...createdTxn } = data.createdTxn
-
-    // fs.appendFileSync(
-    //   logfilepath,
-    //   `${txnId} : ${txnAmount} : ${createdTxn.txnStatus}\n`,
-    // )
 
     await processPayment({
       txnId: txnId,

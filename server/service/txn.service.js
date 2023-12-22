@@ -22,13 +22,13 @@ const getAllTxnsService = async () => {
 }
 
 const createTxnService = async (txnInput) => {
+  let createdTxn
+
   const { email, item, txnAmount, products } = txnInput
   if (!email) throw new Error('Email is required')
   if (!item) throw new Error('Item is required')
   if (!txnAmount) throw new Error('Transaction amount is required')
   if (!products) throw new Error('Products are required')
-  let isReserve = false
-  let createdTxn
   try {
     createdTxn = await prisma.transaction.create({
       data: {
@@ -47,57 +47,12 @@ const createTxnService = async (txnInput) => {
         },
       },
     })
-
-    isReserve = await reserveProductAndPayService(
-      products,
-      createdTxn.txnId,
-      txnAmount,
-    )
-    console.log({ isReserve })
-  } catch (err) {
-    console.log('wtf' + err)
-    isReserve = false
-    if (!createdTxn) {
-      throw new Error(`Error creating transaction`)
-    }
-    createdTxn = await prisma.transaction.update({
-      where: {
-        txnId: createdTxn.txnId,
-      },
-      data: {
-        txnStatus: 'FAILED',
-      },
-    })
-  } finally {
-    if (!createdTxn) {
-      throw new Error(`Error creating transaction`)
-    }
-
-    return {
-      isReserve,
-      createdTxn,
-    }
-  }
-}
-
-let isLock = false // Lock flag
-
-const reserveProductAndPayService = async (products, txnId, txnAmount) => {
-  try {
+    //process reserve stock
     const tx = await prisma.$transaction(
       async (prisma) => {
         for (let i = 0; i < products.length; i++) {
           console.log(`processing product ${products[i].id}`)
           const product = products[i]
-
-          // Acquire the lock
-          while (isLock) {
-            // Wait until the lock is released
-            await new Promise((resolve) => setTimeout(resolve, 100))
-          }
-
-          // Set the lock
-          isLock = true
 
           try {
             // Retrieve the current stock
@@ -134,9 +89,6 @@ const reserveProductAndPayService = async (products, txnId, txnAmount) => {
             })
           } catch (err) {
             throw new Error(`${err.message}`)
-          } finally {
-            // Release the lock
-            isLock = false
           }
         }
         return true
@@ -146,11 +98,28 @@ const reserveProductAndPayService = async (products, txnId, txnAmount) => {
       },
     )
 
-    return tx
+    return {
+      isReserve: tx,
+      createdTxn,
+    }
   } catch (err) {
     // fs.appendFileSync(logfilepath, `error ${txnId} :  ${err.message}\n`)
     console.log(`error processing transaction ${err.message}`)
-    throw new Error(`${err.message}`)
+    if (!createdTxn) throw new Error(`Error creating transaction`)
+
+    createdTxn = await prisma.transaction.update({
+      where: {
+        txnId: createdTxn.txnId,
+      },
+      data: {
+        txnStatus: 'FAILED',
+      },
+    })
+
+    return {
+      isReserve: false,
+      createdTxn,
+    }
   }
 }
 
