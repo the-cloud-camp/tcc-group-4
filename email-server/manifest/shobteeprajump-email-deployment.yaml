@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: shobteeprajump-email-app
-        image: diskette42/email
+        image: justtod/shobteeprajump-email-server:v0.5.14
         env:
           - name: RABBITMQ_SVC
             value: group4-rabbitmq.group-4:5672

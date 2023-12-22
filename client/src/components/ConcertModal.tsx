@@ -41,11 +41,9 @@ const ConcertModal = () => {
             txnAmount: Math.floor(
               selectedConcert.amount * selectedConcert.item.price
             ),
-            products: [
-              Array.from({ length: selectedConcert.amount }, () => {
-                return { id: selectedConcert.item?.productId };
-              }),
-            ],
+            products:  Array.from({ length: selectedConcert.amount }, () => {
+              return { id: selectedConcert.item?.productId };
+            }),
           },
         }
       );
