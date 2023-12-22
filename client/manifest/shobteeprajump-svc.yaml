@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: shobteeprajump-client-service
+  namespace: group-4
 spec:
   selector:
     app: shobteeprajump-client
