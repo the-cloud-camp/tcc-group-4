@@ -1,8 +1,15 @@
-FROM node:18-alpine3.18
+FROM node:18-alpine3.18 as build-app
 RUN mkdir /app
 COPY package*.json /app
 WORKDIR /app
 RUN npm install
-COPY . .
-EXPOSE 3003
-CMD ["npm", "run", "dev"]
+COPY . /app
+
+RUN npm run build
+
+
+FROM nginx:alpine
+COPY --from=build-app /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

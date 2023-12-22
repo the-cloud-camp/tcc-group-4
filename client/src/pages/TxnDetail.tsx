@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import RedeemTicketModal from '../components/RedeemTicketModal'
 
 interface Txn {
@@ -30,7 +30,9 @@ const TxnDetail = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
   const getTxnDetail = useCallback(async () => {
-    const res = await axios.get(import.meta.env.VITE_API_URL + '/txn/' + txnId)
+    const res = await axios.get(
+      import.meta.env.VITE_API_URL + '/group-4/app/txn/' + txnId,
+    )
     setTxn(res.data)
   }, [txnId])
 
@@ -50,7 +52,7 @@ const TxnDetail = () => {
 
   const handleRedeem = async () => {
     const res = await axios.post(
-      import.meta.env.VITE_API_URL + '/ticket/redeem',
+      import.meta.env.VITE_API_URL + '/group-4/app/ticket/redeem',
       {
         ticketId: ticket?.ticketId,
       },

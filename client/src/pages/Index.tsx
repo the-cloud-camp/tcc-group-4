@@ -23,7 +23,7 @@ const Index = () => {
   } = concertState;
 
   const getConcertList = async () => {
-    const response = await fetch(import.meta.env.VITE_API_URL + "/product/all");
+    const response = await fetch(import.meta.env.VITE_API_URL + "/group-4/app/product/all");
     if (response.ok) {
       const data = await response.json();
       store.dispatch(concertActions.setConcertList(data));
