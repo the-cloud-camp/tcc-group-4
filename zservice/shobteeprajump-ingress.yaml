@@ -4,7 +4,6 @@ metadata:
   creationTimestamp: null
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: HTTP
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
   name: shobteeprajump-ingress
 spec:
   ingressClassName: nginx
@@ -14,25 +13,10 @@ spec:
       paths:
       - backend:
           service:
-            name: shobteeprajump-service
-            port:
-              number: 3000
-        path: /group-4/app(/|$)(.*)
-        pathType: Exact
-      - backend:
-          service:
-            name: shobteeprajump-producer-service
-            port:
-              number: 8003
-        path: /group-4/ticket(/|$)(.*)
-        pathType: Exact
-      - backend:
-          service:
             name: shobteeprajump-client-service
             port:
               number: 3002
-        path: /group-4/client(/|$)(.*)
-        pathType: Exact
-        
+        path: /group-4/client
+        pathType: Prefix
 status:
   loadBalancer: {}

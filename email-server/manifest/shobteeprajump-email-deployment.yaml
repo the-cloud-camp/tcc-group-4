@@ -25,7 +25,7 @@ spec:
           - name: RABBITMQ_SVC
             value: group4-rabbitmq.group-4:5672
           - name: APP_URL
-            value: http://shobteeprajump-app.com
+            value: https://tcc-01.th1.proen.cloud/group-4/client
           - name: PORT
             value: "8002"
         ports:
