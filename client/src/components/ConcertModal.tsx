@@ -31,7 +31,7 @@ const ConcertModal = () => {
         })
       );
       const response = await axios.post(
-        import.meta.env.VITE_API_URL + "/product/checkout",
+        import.meta.env.VITE_API_URL + "/group-4/ticket/checkout",
         {
           txn: {
             email: selectedConcert.email,
