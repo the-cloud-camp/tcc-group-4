@@ -119,12 +119,12 @@ const ConcertModal = () => {
             <div className="overflow-hidden rounded w-40">
               <img
                 src="https://placehold.co/600x400/EEE/31343C"
-                alt={`${selectedConcert.item.name}-image`}
+                alt={`${selectedConcert.item.productName}-image`}
               />
             </div>
             <div className="flex flex-col gap-1">
               <h2 className=" text-lg font-medium text-violet-800">
-                {selectedConcert.item.name}
+                {selectedConcert.item.productName}
               </h2>
               <div className="flex items-center gap-2">
                 <MapPinIcon className="w-5 h-5" />
@@ -135,7 +135,7 @@ const ConcertModal = () => {
               <div className="flex items-center gap-2">
                 <CalendarDaysIcon className="w-5 h-5" />
                 <p className="text-sm truncate">
-                  {new Date(selectedConcert.item.date || 2023).toLocaleString(
+                  {new Date(selectedConcert.item.eventDate || 2023).toLocaleString(
                     "default",
                     {
                       day: "2-digit",

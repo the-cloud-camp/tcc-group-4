@@ -3,10 +3,11 @@ import { RootState } from "../../redux/store";
 
 export interface ConcertDataType {
   productId: number;
-  name: string;
+  productName: string;
   place: string;
-  date: string;
+  eventDate: string;
   price: number;
+  productImage: string
 }
 
 interface ConcertState {

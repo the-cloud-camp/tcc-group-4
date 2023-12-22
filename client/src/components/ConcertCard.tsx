@@ -28,12 +28,12 @@ const ConcertCard = ({ data }: ConcertCardProps) => {
     <section className="p-4 bg-white rounded shadow flex flex-col gap-4">
       <div className="overflow-hidden rounded">
         <img
-          src="https://placehold.co/600x400/EEE/31343C"
-          alt={`${data.name}-image`}
+          src={data.productImage}
+          alt={`${data.productName}-image`}
         />
       </div>
       <div>
-        <h2 className=" text-lg font-medium text-violet-800">{data.name}</h2>
+        <h2 className=" text-lg font-medium text-violet-800">{data.productName}</h2>
         <div className="flex items-center gap-2">
           <MapPinIcon className="w-5 h-5" />
           <p className="text-sm truncate">{data.place || "Unknown"}</p>
@@ -41,7 +41,7 @@ const ConcertCard = ({ data }: ConcertCardProps) => {
         <div className="flex items-center gap-2">
           <CalendarDaysIcon className="w-5 h-5" />
           <p className="text-sm truncate">
-            {new Date(data.date || "2023").toLocaleString("default", {
+            {new Date(data.eventDate || "2023").toLocaleString("default", {
               day: "2-digit",
               month: "long",
               year: "numeric",
