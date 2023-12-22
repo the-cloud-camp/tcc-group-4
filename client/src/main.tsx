@@ -7,21 +7,16 @@ import { Provider } from 'react-redux'
 import { store } from './redux/store'
 import TxnDetail from './pages/TxnDetail'
 
-const router = createBrowserRouter(
-  [
-    {
-      path: '/',
-      element: <Index />,
-    },
-    {
-      path: '/:txnId',
-      element: <TxnDetail />,
-    },
-  ],
+const router = createBrowserRouter([
   {
-    basename: '/group-4/client',
+    path: '/',
+    element: <Index />,
   },
-)
+  {
+    path: '/:txnId',
+    element: <TxnDetail />,
+  },
+])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

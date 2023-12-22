@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: shobteeprajump-client
-        image: justtod/shobteeprajump-client:v0.5.3
+        image: justtod/shobteeprajump-client:v0.5.4
         env:
           - name: VITE_API_URL
             value: https://tcc-01.th1.proen.cloud
