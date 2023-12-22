@@ -3,6 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: group4-rabbitmq
+  namespace: group-4
 spec:
   ports:
     - protocol: TCP

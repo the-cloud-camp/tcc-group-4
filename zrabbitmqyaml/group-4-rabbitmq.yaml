@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: group4-rabbitmq
+  namespace: group-4
 spec:
   serviceName: "group4-rabbitmq"
   replicas: 1

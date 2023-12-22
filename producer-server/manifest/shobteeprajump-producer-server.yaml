@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: shobteeprajump-producer-deployment
+  namespace: group-4
   creationTimestamp: null
   labels:
     app: shobteeprajump-producer-app

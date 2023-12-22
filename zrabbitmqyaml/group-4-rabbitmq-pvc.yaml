@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: shobteeprajump-rabbitmq-pvc
+  namespace: group-4
 spec:
   accessModes:
     - ReadWriteMany
