@@ -73,7 +73,7 @@ function configureTracer(name) {
     }),
 
     traceExporter: new OTLPTraceExporter({
-      url: "shobteeprajump-obs-svc.group-4-obs:4318",
+      url: "http://shobteeprajump-obs-svc.group-4-obs:4318/v1/traces",
     }),
   });
   return trace;
@@ -86,7 +86,7 @@ function configureMeter(name) {
 
   const metricReader = new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter({
-      url: "shobteeprajump-obs-svc.group-4-obs:4318",
+      url: "http://shobteeprajump-obs-svc.group-4-obs:4318/v1/metrics",
     }),
 
     exportIntervalMillis: 3000,
